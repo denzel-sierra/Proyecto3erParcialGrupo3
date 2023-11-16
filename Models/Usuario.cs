@@ -1,6 +1,6 @@
 ﻿namespace Proyecto3erParcialGrupo3.Models
 {
-    public class Usuarios
+    public class Usuario
     {
         public int IDUsuario { get; set; }
         public string Rol { get; set; }
