@@ -1,6 +1,6 @@
 ﻿namespace Proyecto3erParcialGrupo3.Models
 {
-    public class ServiciosHotel
+    public class ServicioHotel
     {
         public int IDServicio { get; set; }
         public string NombreServicio { get; set; }
