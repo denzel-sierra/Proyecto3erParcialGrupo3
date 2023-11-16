@@ -7,5 +7,6 @@
         public int IDEmpleado { get; set; }
         public DateTime FechaHoraCita { get; set; }
         public string EstadoCita { get; set; }
+        // PRUEBA
     }
 }
