@@ -1,6 +1,6 @@
 ﻿namespace Proyecto3erParcialGrupo3.Models
 {
-    public class Reservas
+    public class Reserva
     {
         public int IDReserva { get; set; }
         public int IDUsuario { get; set; }
