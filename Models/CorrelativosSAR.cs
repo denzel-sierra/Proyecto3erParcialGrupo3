@@ -2,7 +2,7 @@
 {
     public class CorrelativosSAR
     {
-        public int IDCorrelativoSAR { get; set; }
+        public Guid IDCorrelativoSAR { get; set; }
         public string NumeroCAI { get; set; }
         public int NumeroInicial { get; set; }
         public int NumeroFinal { get; set; }
