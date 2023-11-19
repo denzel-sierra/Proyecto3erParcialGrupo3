@@ -12,6 +12,7 @@
         public DateTime FechaFinal { get; set; }
         public bool Finalizado { get; set; }
 
+
         // Relaciones
         public ICollection<EncabezadoFactura> Facturas { get; set; }
     }
