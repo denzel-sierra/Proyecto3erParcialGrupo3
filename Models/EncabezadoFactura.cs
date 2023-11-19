@@ -2,10 +2,10 @@
 {
     public class EncabezadoFactura
     {
-        public int IDFactura { get; set; }
-        public int IDCorrelativoSAR { get; set; }
-        public int IDEmpleado { get; set; }
-        public int IDUsuario { get; set; }
+        public Guid IDFactura { get; set; }
+        public Guid IDCorrelativoSAR { get; set; }
+        public Guid IDEmpleado { get; set; }
+        public Guid IDUsuario { get; set; }
         public string NumeroFacturaSAR { get; set; }
         public DateTime FechaFactura { get; set; }
         public decimal SubTotalFactura { get; set; }
