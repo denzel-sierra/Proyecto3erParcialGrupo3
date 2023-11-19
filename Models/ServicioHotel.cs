@@ -2,7 +2,7 @@
 {
     public class ServicioHotel
     {
-        public int IDServicio { get; set; }
+        public Guid IDServicio { get; set; }
         public string NombreServicio { get; set; }
         public string Descripcion { get; set; }
         public TimeSpan Duracion { get; set; }
