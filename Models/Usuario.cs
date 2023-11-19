@@ -10,5 +10,10 @@
         public string NumeroTelefono { get; set; }
         public string NombreUsuario { get; set; }
         public string Contraseña { get; set; }
+
+        // Relaciones
+        public ICollection<Reserva> Reservas { get; set; }
+        public ICollection<EncabezadoFactura> Facturas { get; set; }
+        public ICollection<Citas> Citas { get; set; }
     }
 }
