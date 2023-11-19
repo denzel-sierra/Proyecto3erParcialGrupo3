@@ -2,7 +2,7 @@
 {
     public class Habitaciones
     {
-        public int IDHabitacion { get; set; }
+        public Guid IDHabitacion { get; set; }
         public string TipoHabitacion { get; set; }
         public decimal Tarifa { get; set; }
         public bool Disponibilidad { get; set; }
