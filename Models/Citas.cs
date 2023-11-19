@@ -8,5 +8,8 @@
         public DateTime FechaHoraCita { get; set; }
         public string EstadoCita { get; set; }
         // PRUEBA
+
+        // Relaciones
+        public Usuario Usuario { get; set; }
     }
 }

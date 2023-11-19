@@ -11,5 +11,8 @@
         public DateTime FechaLimite { get; set; }
         public DateTime FechaFinal { get; set; }
         public bool Finalizado { get; set; }
+
+        // Relaciones
+        public ICollection<EncabezadoFactura> Facturas { get; set; }
     }
 }
