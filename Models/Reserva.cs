@@ -9,5 +9,10 @@
         public DateTime FechaCheckin { get; set; }
         public DateTime FechaCheckOut { get; set; }
         public string EstadoReserva { get; set; }
+
+        // Relaciones
+        public Usuario Usuario { get; set; }
+        public Habitaciones Habitacion { get; set; }
+        public EncabezadoFactura Factura { get; set; }
     }
 }
