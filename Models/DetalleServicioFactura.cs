@@ -2,9 +2,9 @@
 {
     public class DetalleServicioFactura
     {
-        public int IDDetalleFactura { get; set; }
-        public int IDFactura { get; set; }
-        public int IDServicio { get; set; }
+        public Guid IDDetalleFactura { get; set; }
+        public Guid IDFactura { get; set; }
+        public Guid IDServicio { get; set; }
         public int Cantidad { get; set; }
         public decimal PrecioUnitario { get; set; }
         public decimal SubTotalLinea { get; set; }
