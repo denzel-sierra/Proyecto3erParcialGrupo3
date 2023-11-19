@@ -2,7 +2,7 @@
 {
     public class Usuario
     {
-        public int IDUsuario { get; set; }
+        public Guid IDUsuario { get; set; }
         public string Rol { get; set; }
         public string Nombre { get; set; }
         public string Direccion { get; set; }
