@@ -2,9 +2,9 @@
 {
     public class Citas
     {
-        public int IDCita { get; set; }
-        public int IDUsuario { get; set; }
-        public int IDEmpleado { get; set; }
+        public Guid IDCita { get; set; }
+        public Guid IDUsuario { get; set; }
+        public Guid IDEmpleado { get; set; }
         public DateTime FechaHoraCita { get; set; }
         public string EstadoCita { get; set; }
         // PRUEBA
