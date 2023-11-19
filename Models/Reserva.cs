@@ -2,9 +2,9 @@
 {
     public class Reserva
     {
-        public int IDReserva { get; set; }
-        public int IDUsuario { get; set; }
-        public int IDHabitacion { get; set; }
+        public Guid IDReserva { get; set; }
+        public Guid IDUsuario { get; set; }
+        public Guid IDHabitacion { get; set; }
         public Guid IDFactura { get; set; }
         public DateTime FechaCheckin { get; set; }
         public DateTime FechaCheckOut { get; set; }
