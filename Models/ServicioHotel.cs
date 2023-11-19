@@ -7,5 +7,8 @@
         public string Descripcion { get; set; }
         public TimeSpan Duracion { get; set; }
         public decimal Tarifa { get; set; }
+
+        // Relaciones
+        public ICollection<DetalleServicioFactura> DetallesFacturas { get; set; }
     }
 }
