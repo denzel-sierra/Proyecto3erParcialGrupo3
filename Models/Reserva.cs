@@ -13,6 +13,6 @@
         // Relaciones
         public Usuario Usuario { get; set; }
         public Habitacion Habitacion { get; set; }
-        public EncabezadoFactura Factura { get; set; }
+        public EncabezadoFactura EncabezadoFactura { get; set; }
     }
 }

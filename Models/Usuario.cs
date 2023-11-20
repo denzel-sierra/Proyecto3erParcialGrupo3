@@ -13,7 +13,7 @@
 
         // Relaciones
         public ICollection<Reserva> Reservas { get; set; }
-        public ICollection<EncabezadoFactura> Facturas { get; set; }
+        public ICollection<EncabezadoFactura> EncabezadoFacturas { get; set; }
         public ICollection<Cita> Citas { get; set; }
     }
 }

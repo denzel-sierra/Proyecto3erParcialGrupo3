@@ -9,6 +9,6 @@
         public int Existencias { get; set; }
 
         // Relaciones
-        public ICollection<DetalleProductoFactura> DetallesFacturas { get; set; }
+        public ICollection<DetalleProductoFactura> DetalleProductoFacturas { get; set; }
     }
 }

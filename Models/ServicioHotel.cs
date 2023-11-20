@@ -9,6 +9,6 @@
         public decimal Tarifa { get; set; }
 
         // Relaciones
-        public ICollection<DetalleServicioFactura> DetallesFacturas { get; set; }
+        public ICollection<DetalleServicioFactura> DetalleServicioFacturas { get; set; }
     }
 }

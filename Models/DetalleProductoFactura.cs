@@ -10,7 +10,7 @@
         public decimal SubTotalLinea { get; set; }
 
         // Relaciones
-        public EncabezadoFactura Factura { get; set; }
+        public EncabezadoFactura EncabezadoFactura { get; set; }
         public Producto Producto { get; set; }
     }
 }

@@ -15,9 +15,10 @@
         public bool Eliminada { get; set; }
 
         // Relaciones
-        public CorrelativosSAR CorrelativoSAR { get; set; }
+        public CorrelativoSAR CorrelativoSAR { get; set; }
         public Usuario Usuario { get; set; }
-        public ICollection<DetalleProductoFactura> DetallesProductos { get; set; }
-        public ICollection<DetalleServicioFactura> DetallesServicios { get; set; }
+        public ICollection<DetalleProductoFactura> DetalleProductoFacturas { get; set; }
+        public ICollection<DetalleServicioFactura> DetalleServicioFacturas { get; set; }
+        public ICollection<Reserva> Reservas { get; set; }
     }
 }

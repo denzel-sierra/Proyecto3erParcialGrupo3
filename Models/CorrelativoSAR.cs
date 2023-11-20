@@ -14,6 +14,6 @@
 
 
         // Relaciones
-        public ICollection<EncabezadoFactura> Facturas { get; set; }
+        public ICollection<EncabezadoFactura> EncabezadoFacturas { get; set; }
     }
 }
