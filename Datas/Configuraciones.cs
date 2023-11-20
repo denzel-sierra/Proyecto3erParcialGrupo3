@@ -24,7 +24,7 @@ namespace Proyecto3erParcialGrupo3.Datas
             {
                 //llave
                 builder.HasKey(x => x.IDCorrelativoSAR);
-                
+
                 builder.Property(s => s.NumeroCAI).HasColumnType("varchar(255)");
             }
         }
@@ -34,16 +34,10 @@ namespace Proyecto3erParcialGrupo3.Datas
             {
                 //llave
                 builder.HasKey(x => x.IDDetalleFactura);
-
-                builder.Property(s => s.NumeroCAI).HasColumnType("varchar(255)");
                 builder.Property(a => a.PrecioUnitario).HasColumnType("decimal(8,2)").HasColumnName("PrecioUnitario");
                 builder.Property(a => a.SubTotalLinea).HasColumnType("decimal(8,2)").HasColumnName("SubTotalLinea");
-                //llave foranea
-                builder.HasOne(c => c.EncabezadoFactura).WithMany(u => u.DetalleProductoFacturas).HasForeignKey(c => c.IDFactura);
-                builder.HasOne(c => c.Producto).WithMany(u => u.DetalleProductoFacturas).HasForeignKey(c => c.IDProducto);
-
             }
-    }
+        }
         public class DetalleServicioFacturaConfig : IEntityTypeConfiguration<DetalleServicioFactura>
         {
             public void Configure(EntityTypeBuilder<DetalleServicioFactura> builder)
@@ -53,9 +47,6 @@ namespace Proyecto3erParcialGrupo3.Datas
 
                 builder.Property(a => a.PrecioUnitario).HasColumnType("decimal(8,2)").HasColumnName("PrecioUnitario");
                 builder.Property(a => a.SubTotalLinea).HasColumnType("decimal(8,2)").HasColumnName("SubTotalLinea");
-                //llave foranea
-                builder.HasOne(c => c.EncabezadoFactura).WithMany(u => u.DetalleServicioFacturas).HasForeignKey(c => c.IDFactura);
-                builder.HasOne(c => c.ServicioHotel).WithMany(u => u.DetalleServicioFacturas).HasForeignKey(c => c.IDServicio);
 
             }
         }
@@ -71,10 +62,11 @@ namespace Proyecto3erParcialGrupo3.Datas
                 builder.Property(a => a.DescuentoFactura).HasColumnType("decimal(8,2)").HasColumnName("DescuentoFactura");
                 builder.Property(a => a.ImpuestoFactura).HasColumnType("decimal(8,2)").HasColumnName("ImpuestoFactura");
                 builder.Property(a => a.TotalFactura).HasColumnType("decimal(8,2)").HasColumnName("TotalFactura");
-                //llave foranea
-                builder.HasOne(c => c.CorrelativoSAR).WithMany(u => u.EncabezadoFacturas).HasForeignKey(c => c.IDCorrelativoSAR);
-                builder.HasOne(c => c.Usuario).WithMany(u => u.EncabezadoFacturas).HasForeignKey(c => c.IDUsuario);
 
+                //llave foranea
+                builder.HasMany(a => a.Reservas).WithOne(a => a.EncabezadoFactura).HasForeignKey(a => a.IDFactura);
+                builder.HasMany(a => a.DetalleProductoFacturas).WithOne(a => a.EncabezadoFactura).HasForeignKey(a => a.IDFactura);
+                builder.HasMany(a => a.DetalleServicioFacturas).WithOne(a => a.EncabezadoFactura).HasForeignKey(a => a.IDFactura);
             }
         }
         public class HabitacionConfig : IEntityTypeConfiguration<Habitacion>
@@ -87,7 +79,11 @@ namespace Proyecto3erParcialGrupo3.Datas
                 builder.Property(s => s.TipoHabitacion).HasColumnType("varchar(255)");
                 builder.Property(s => s.Descripcion).HasColumnType("varchar(255)");
                 builder.Property(a => a.Tarifa).HasColumnType("decimal(8,2)").HasColumnName("Tarifa");
-                
+
+                //llave foranea
+                builder.HasMany(a => a.Reservas).WithOne(a => a.Habitacion).HasForeignKey(a => a.IDHabitacion);
+
+
             }
         }
         public class ProductoConfig : IEntityTypeConfiguration<Producto>
@@ -111,11 +107,6 @@ namespace Proyecto3erParcialGrupo3.Datas
                 builder.HasKey(x => x.IDReserva);
 
                 builder.Property(s => s.EstadoReserva).HasColumnType("varchar(255)");
-                //llave foranea
-                builder.HasOne(c => c.Usuario).WithMany(u => u.Reservas).HasForeignKey(c => c.IDUsuario);
-                builder.HasOne(c => c.Habitacion).WithMany(u => u.Reservas).HasForeignKey(c => c.IDHabitacion);
-                builder.HasOne(c => c.EncabezadoFactura).WithMany(u => u.Reservas).HasForeignKey(c => c.IDFactura);
-
 
             }
         }
@@ -147,7 +138,13 @@ namespace Proyecto3erParcialGrupo3.Datas
                 builder.Property(s => s.NombreUsuario).HasColumnType("varchar(255)");
                 builder.Property(s => s.Contraseña).HasColumnType("varchar(255)");
 
+                //llaves foraneas
+                builder.HasMany(a => a.Reservas).WithOne(a => a.Usuario).HasForeignKey(a => a.IDUsuario);
+                builder.HasMany(a => a.EncabezadoFacturas).WithOne(a => a.Usuario).HasForeignKey(a => a.IDUsuario);
+                builder.HasMany(a => a.Citas).WithOne(a => a.Usuario).HasForeignKey(a => a.IDUsuario);
+
 
             }
         }
     }
+}
