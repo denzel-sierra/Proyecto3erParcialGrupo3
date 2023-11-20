@@ -1,6 +1,6 @@
 ﻿namespace Proyecto3erParcialGrupo3.Models
 {
-    public class Productos
+    public class Producto
     {
         public Guid IDProducto { get; set; }
         public string NombreProducto { get; set; }

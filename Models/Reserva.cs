@@ -12,7 +12,7 @@
 
         // Relaciones
         public Usuario Usuario { get; set; }
-        public Habitaciones Habitacion { get; set; }
+        public Habitacion Habitacion { get; set; }
         public EncabezadoFactura Factura { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Proyecto3erParcialGrupo3.Models
 {
-    public class Citas
+    public class Cita
     {
         public Guid IDCita { get; set; }
         public Guid IDUsuario { get; set; }

@@ -11,6 +11,6 @@
 
         // Relaciones
         public EncabezadoFactura Factura { get; set; }
-        public Productos Producto { get; set; }
+        public Producto Producto { get; set; }
     }
 }

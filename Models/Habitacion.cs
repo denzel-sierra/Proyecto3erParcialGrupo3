@@ -1,6 +1,6 @@
 ﻿namespace Proyecto3erParcialGrupo3.Models
 {
-    public class Habitaciones
+    public class Habitacion
     {
         public Guid IDHabitacion { get; set; }
         public string TipoHabitacion { get; set; }

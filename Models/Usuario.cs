@@ -14,6 +14,6 @@
         // Relaciones
         public ICollection<Reserva> Reservas { get; set; }
         public ICollection<EncabezadoFactura> Facturas { get; set; }
-        public ICollection<Citas> Citas { get; set; }
+        public ICollection<Cita> Citas { get; set; }
     }
 }

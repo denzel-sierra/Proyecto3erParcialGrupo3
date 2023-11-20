@@ -1,6 +1,6 @@
 ﻿namespace Proyecto3erParcialGrupo3.Models
 {
-    public class CorrelativosSAR
+    public class CorrelativoSAR
     {
         public Guid IDCorrelativoSAR { get; set; }
         public string NumeroCAI { get; set; }
