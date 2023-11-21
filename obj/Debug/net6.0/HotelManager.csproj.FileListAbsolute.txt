@@ -283,3 +283,6 @@ C:\Users\raiden\source\repos\denzel-sierra\Proyecto3erParcialGrupo3\bin\Debug\ne
 C:\Users\raiden\source\repos\denzel-sierra\Proyecto3erParcialGrupo3\bin\Debug\net6.0\runtimes\win-arm64\native\e_sqlite3.dll
 C:\Users\raiden\source\repos\denzel-sierra\Proyecto3erParcialGrupo3\bin\Debug\net6.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\raiden\source\repos\denzel-sierra\Proyecto3erParcialGrupo3\bin\Debug\net6.0\runtimes\win-x86\native\e_sqlite3.dll
+C:\Users\raiden\source\repos\denzel-sierra\Proyecto3erParcialGrupo3\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.UI.dll
+C:\Users\raiden\source\repos\denzel-sierra\Proyecto3erParcialGrupo3\bin\Debug\net6.0\Microsoft.Extensions.FileProviders.Embedded.dll
+C:\Users\raiden\source\repos\denzel-sierra\Proyecto3erParcialGrupo3\obj\Debug\net6.0\HotelManager.MvcApplicationPartsAssemblyInfo.cs

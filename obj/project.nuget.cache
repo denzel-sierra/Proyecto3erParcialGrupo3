@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "yM4IpPNZ1MOMSbEP7IdkLrOZb10ZaEDSf63xgEFPJimvq+lD/IKTvnTHDltk/cFbrqrAv3DvQ5MUtry7Q7xxxg==",
+  "dgSpecHash": "MYNF3l8JnuHG/WwCrzQaktBOUao6so227qJtAu5yNJu20YMf8YqV2Lb4fIrFvW/LFrgLHLhbJJwyk9fNfkL2RA==",
   "success": true,
   "projectFilePath": "C:\\Users\\raiden\\source\\repos\\denzel-sierra\\Proyecto3erParcialGrupo3\\HotelManager.csproj",
   "expectedPackageFiles": [
@@ -62,6 +62,7 @@
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\6.0.25\\microsoft.aspnetcore.cryptography.internal.6.0.25.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\6.0.25\\microsoft.aspnetcore.cryptography.keyderivation.6.0.25.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.aspnetcore.identity.entityframeworkcore\\6.0.25\\microsoft.aspnetcore.identity.entityframeworkcore.6.0.25.nupkg.sha512",
+    "C:\\Users\\raiden\\.nuget\\packages\\microsoft.aspnetcore.identity.ui\\6.0.23\\microsoft.aspnetcore.identity.ui.6.0.23.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.aspnetcore.razor.language\\6.0.0\\microsoft.aspnetcore.razor.language.6.0.0.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\5.0.0\\microsoft.bcl.asyncinterfaces.5.0.0.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.build\\17.3.2\\microsoft.build.17.3.2.nupkg.sha512",
@@ -97,6 +98,8 @@
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\6.0.1\\microsoft.extensions.dependencyinjection.6.0.1.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\6.0.0\\microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.extensions.dependencymodel\\6.0.0\\microsoft.extensions.dependencymodel.6.0.0.nupkg.sha512",
+    "C:\\Users\\raiden\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\6.0.0\\microsoft.extensions.fileproviders.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\raiden\\.nuget\\packages\\microsoft.extensions.fileproviders.embedded\\6.0.23\\microsoft.extensions.fileproviders.embedded.6.0.23.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.extensions.identity.core\\6.0.25\\microsoft.extensions.identity.core.6.0.25.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.extensions.identity.stores\\6.0.25\\microsoft.extensions.identity.stores.6.0.25.nupkg.sha512",
     "C:\\Users\\raiden\\.nuget\\packages\\microsoft.extensions.logging\\6.0.0\\microsoft.extensions.logging.6.0.0.nupkg.sha512",

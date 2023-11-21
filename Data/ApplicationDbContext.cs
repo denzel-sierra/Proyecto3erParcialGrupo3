@@ -1,10 +1,11 @@
 ﻿using HotelManager.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using static HotelManager.Data.Configuraciones;
 
 namespace HotelManager.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -33,6 +34,7 @@ namespace HotelManager.Data
         // Configuraciones
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             // Cita
             modelBuilder.ApplyConfiguration(new CitasConfig());
             // CorrelativoSAR

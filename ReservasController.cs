@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelManager.Data;
 using HotelManager.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelManager
 {
+    [Authorize]
     public class ReservasController : Controller
     {
         private readonly ApplicationDbContext _context;
