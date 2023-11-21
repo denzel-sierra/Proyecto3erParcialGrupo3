@@ -1,4 +1,4 @@
-﻿namespace Proyecto3erParcialGrupo3.Models
+﻿namespace HotelManager.Models
 {
     public class Cita
     {
@@ -10,6 +10,5 @@
         // PRUEBA
 
         // Relaciones
-        public Usuario Usuario { get; set; }
     }
 }

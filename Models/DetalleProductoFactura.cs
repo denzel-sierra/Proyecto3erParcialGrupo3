@@ -1,4 +1,4 @@
-﻿namespace Proyecto3erParcialGrupo3.Models
+﻿namespace HotelManager.Models
 {
     public class DetalleProductoFactura
     {

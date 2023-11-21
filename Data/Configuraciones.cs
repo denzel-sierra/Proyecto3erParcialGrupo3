@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using Proyecto3erParcialGrupo3.Models;
+using HotelManager.Models;
 
-namespace Proyecto3erParcialGrupo3.Data
+namespace HotelManager.Data
 {
     public class Configuraciones
     {
@@ -13,7 +13,6 @@ namespace Proyecto3erParcialGrupo3.Data
                 //llave
                 builder.HasKey(x => x.IDCita);
                 //llave foranea
-                builder.HasOne(c => c.Usuario).WithMany(u => u.Citas).HasForeignKey(c => c.IDUsuario);
 
                 builder.Property(s => s.EstadoCita).HasColumnType("varchar(255)");
             }
@@ -120,29 +119,6 @@ namespace Proyecto3erParcialGrupo3.Data
                 builder.Property(s => s.NombreServicio).HasColumnType("varchar(255)");
                 builder.Property(s => s.Descripcion).HasColumnType("varchar(255)");
                 builder.Property(a => a.Tarifa).HasColumnType("decimal(8,2)").HasColumnName("Tarifa");
-
-            }
-        }
-        public class UsuarioConfig : IEntityTypeConfiguration<Usuario>
-        {
-            public void Configure(EntityTypeBuilder<Usuario> builder)
-            {
-                //llave
-                builder.HasKey(x => x.IDUsuario);
-
-                builder.Property(s => s.Rol).HasColumnType("varchar(255)");
-                builder.Property(s => s.Nombre).HasColumnType("varchar(255)");
-                builder.Property(s => s.Direccion).HasColumnType("varchar(255)");
-                builder.Property(s => s.CorreoElectronico).HasColumnType("varchar(255)");
-                builder.Property(s => s.NumeroTelefono).HasColumnType("varchar(255)");
-                builder.Property(s => s.NombreUsuario).HasColumnType("varchar(255)");
-                builder.Property(s => s.Contraseña).HasColumnType("varchar(255)");
-
-                //llaves foraneas
-                builder.HasMany(a => a.Reservas).WithOne(a => a.Usuario).HasForeignKey(a => a.IDUsuario);
-                builder.HasMany(a => a.EncabezadoFacturas).WithOne(a => a.Usuario).HasForeignKey(a => a.IDUsuario);
-                builder.HasMany(a => a.Citas).WithOne(a => a.Usuario).HasForeignKey(a => a.IDUsuario);
-
 
             }
         }

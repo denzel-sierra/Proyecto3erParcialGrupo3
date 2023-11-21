@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Proyecto3erParcialGrupo3.Models;
+﻿using HotelManager.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace Proyecto3erParcialGrupo3.Controllers
+namespace HotelManager.Controllers
 {
     public class HomeController : Controller
     {

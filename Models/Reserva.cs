@@ -1,4 +1,4 @@
-﻿namespace Proyecto3erParcialGrupo3.Models
+﻿namespace HotelManager.Models
 {
     public class Reserva
     {
@@ -11,7 +11,6 @@
         public string EstadoReserva { get; set; }
 
         // Relaciones
-        public Usuario Usuario { get; set; }
         public Habitacion Habitacion { get; set; }
         public EncabezadoFactura EncabezadoFactura { get; set; }
     }

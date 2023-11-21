@@ -1,4 +1,4 @@
-﻿namespace Proyecto3erParcialGrupo3.Models
+﻿namespace HotelManager.Models
 {
     public class EncabezadoFactura
     {
@@ -16,7 +16,6 @@
 
         // Relaciones
         public CorrelativoSAR CorrelativoSAR { get; set; }
-        public Usuario Usuario { get; set; }
         public ICollection<DetalleProductoFactura> DetalleProductoFacturas { get; set; }
         public ICollection<DetalleServicioFactura> DetalleServicioFacturas { get; set; }
         public ICollection<Reserva> Reservas { get; set; }
