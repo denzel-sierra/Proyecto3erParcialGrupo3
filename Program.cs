@@ -10,11 +10,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<Proyecto3erParcialGrupo3DbContext> // Conexion a la Base de Datos
     (options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Para Identity
-builder.Services.AddIdentity<Usuario, IdentityRole>()
-    .AddEntityFrameworkStores<Proyecto3erParcialGrupo3DbContext>()
-    .AddDefaultTokenProviders();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
