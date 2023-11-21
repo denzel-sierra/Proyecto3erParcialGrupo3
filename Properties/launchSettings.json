@@ -3,16 +3,16 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:45551",
-      "sslPort": 44384
+      "applicationUrl": "http://localhost:58465",
+      "sslPort": 44360
     }
   },
   "profiles": {
-    "Proyecto3erParcialGrupo3": {
+    "HotelManager": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7091;http://localhost:5195",
+      "applicationUrl": "https://localhost:7093;http://localhost:5298",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
