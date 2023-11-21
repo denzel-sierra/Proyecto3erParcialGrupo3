@@ -1,7 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+using Proyecto3erParcialGrupo3.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<Proyecto3erParcialGrupo3DbContext> // Conexion a la Base de Datos
+    (options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
