@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Proyecto3erParcialGrupo3.Models;
 using static Proyecto3erParcialGrupo3.Data.Configuraciones;
-using static Proyecto3erParcialGrupo3.Datas.Configuraciones;
 
 namespace Proyecto3erParcialGrupo3.Data
 {
-    public class DbTaxisDbContext : DbContext
+    public class Proyecto3erParcialGrupo3DbContext : DbContext
     {
         // Constructor
-        public DbTaxisDbContext(DbContextOptions<DbTaxisDbContext> options) : base(options) { }
+        public Proyecto3erParcialGrupo3DbContext(DbContextOptions<Proyecto3erParcialGrupo3DbContext> options) : base(options) { }
 
         // Entidades
         //
