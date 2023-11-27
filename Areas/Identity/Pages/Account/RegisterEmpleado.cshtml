@@ -1,5 +1,5 @@
 ﻿@page
-@model RegisterModel
+@model RegisterEmpleadoModel
 @{
     ViewData["Title"] = "Registro";
 }
@@ -7,9 +7,8 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-4">
-            <h1>@ViewData["Title"]</h1>
             <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                <h2 class="text-center">Crear una nueva cuenta</h2>
+                <h2 class="text-center">Registrar un Nuevo Empleado en el Sistema</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -49,7 +48,12 @@
                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                 </div>
 
-                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registrar</button>
+                <div class="form-check">
+                    <input asp-for="Input.IsAdmin" class="form-check-input" />
+                    <label class="form-check-label" asp-for="Input.IsAdmin">Asignar rol de Administrador</label>
+                </div>
+
+                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registrar Empleado</button>
             </form>
         </div>
     </div>

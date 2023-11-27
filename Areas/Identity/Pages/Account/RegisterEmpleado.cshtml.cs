@@ -19,20 +19,20 @@ using Microsoft.Extensions.Logging;
 
 namespace HotelManager.Areas.Identity.Pages.Account
 {
-    public class RegisterModel : PageModel
+    public class RegisterEmpleadoModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
-        private readonly ILogger<RegisterModel> _logger;
+        private readonly ILogger<RegisterEmpleadoModel> _logger;
         private readonly IEmailSender _emailSender;
 
-        public RegisterModel(
+        public RegisterEmpleadoModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<RegisterModel> logger,
+            ILogger<RegisterEmpleadoModel> logger,
             IEmailSender emailSender)
         {
             _userManager = userManager;
@@ -79,6 +79,9 @@ namespace HotelManager.Areas.Identity.Pages.Account
             [Required(ErrorMessage = "El campo Telefono es obligatorio.")]
             [Display(Name = "Teléfono")]
             public string Telefono { get; set; }
+
+            [Display(Name = "Asignar rol de Administrador")]
+            public bool IsAdmin { get; set; }
         }
 
 
@@ -119,8 +122,14 @@ namespace HotelManager.Areas.Identity.Pages.Account
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    // Asignar el rol "Cliente" por defecto
-                    await _userManager.AddToRoleAsync(user, "Cliente");
+                    if (Input.IsAdmin)
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, "Empleado");
+                    }
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

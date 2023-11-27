@@ -9,7 +9,7 @@ using HotelManager.Data;
 using HotelManager.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace HotelManager
+namespace HotelManager.Controllers
 {
     [Authorize]
     public class ReservasController : Controller
@@ -164,14 +164,14 @@ namespace HotelManager
             {
                 _context.Reserva.Remove(reserva);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ReservaExists(Guid id)
         {
-          return (_context.Reserva?.Any(e => e.IDReserva == id)).GetValueOrDefault();
+            return (_context.Reserva?.Any(e => e.IDReserva == id)).GetValueOrDefault();
         }
     }
 }
