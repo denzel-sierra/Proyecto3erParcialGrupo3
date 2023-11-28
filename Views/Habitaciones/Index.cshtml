@@ -32,7 +32,9 @@
                 <td>
                     <a asp-action="Editar" asp-route-id="@habitacion.IDHabitacion" class="btn btn-warning">Editar</a>
                     <!-- Agregamos un enlace para editar con el ID de la habitación -->
+                    <a asp-action="Eliminar" asp-route-id="@habitacion.IDHabitacion" class="btn btn-danger">Eliminar</a>
                 </td>
+
             </tr>
         }
     </tbody>

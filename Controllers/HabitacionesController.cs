@@ -149,7 +149,62 @@ namespace HotelManager.Controllers
 
             return View("Editar", habitacionVM);
         }
-    }
+        [HttpGet]
+        public IActionResult Eliminar(Guid id)
+        {
+            Debug.WriteLine($"Entrando a get");
+            var habitacion = _dbContext.Habitacion.FirstOrDefault(h => h.IDHabitacion == id);
 
-}
+            if (habitacion == null)
+            {
+                Debug.WriteLine($"Entrando a if get");
+                return NotFound();
+            }
+
+            var habitacionVM = new HabitacionesVM
+            {
+                IDHabitacion = habitacion.IDHabitacion,
+                Numero = habitacion.Numero,
+                TipoHabitacion = habitacion.TipoHabitacion,
+                Tarifa = habitacion.Tarifa,
+                Disponibilidad = habitacion.Disponibilidad,
+                Descripcion = habitacion.Descripcion,
+
+                // Mapea otros campos según sea necesario
+            };
+
+            return View(habitacionVM);
+            Debug.WriteLine($"retorno");
+        }
+
+        [HttpPost]
+        public IActionResult EliminarConfirmacion(Guid id)
+        {
+                    Debug.WriteLine($"Entrando a try del post");
+                    try
+            {
+                var habitacion = _dbContext.Habitacion.FirstOrDefault(h => h.IDHabitacion == id);
+
+                if (habitacion == null)
+                {
+                            Debug.WriteLine($"Entro a if post");
+                            return NotFound();
+                }
+                Debug.WriteLine($"Salio de if");
+                _dbContext.Habitacion.Remove(habitacion);
+                _dbContext.SaveChanges();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar la habitación.");
+                // Puedes manejar errores y mostrar un mensaje al usuario si es necesario
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+            }
+
+        }
 
