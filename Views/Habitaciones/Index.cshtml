@@ -15,7 +15,8 @@
             <th>Tipo de Habitación</th>
             <th>Tarifa</th>
             <th>Descripcion</th>
-            
+            <th>Disponibilidad</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -27,7 +28,11 @@
                 <td>@habitacion.TipoHabitacion</td>
                 <td>@habitacion.Tarifa</td>
                 <td>@habitacion.Descripcion</td>
-                
+                <td>@habitacion.Disponibilidad</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@habitacion.IDHabitacion" class="btn btn-warning">Editar</a>
+                    <!-- Agregamos un enlace para editar con el ID de la habitación -->
+                </td>
             </tr>
         }
     </tbody>
