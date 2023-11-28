@@ -80,18 +80,19 @@ namespace HotelManager.Controllers
 
             try
             {
-                if (ModelState.IsValid)
-                {
+                //if (ModelState.IsValid)
+                //{
                     var reserva = new Reserva
                     {
                         IDReserva = Guid.NewGuid(),
                         IDUsuario = ReservasVM.IDUsuario,
                         IDHabitacion = ReservasVM.IDHabitacion,
-                        IDFactura = Guid.NewGuid(), // Generar un nuevo ID de factura
+                        IDFactura = null,
                         FechaCheckin = ReservasVM.FechaCheckin,
-                        FechaCheckOut = ReservasVM.FechaCheckin.AddDays(ReservasVM.CantidadDias), // Calcular la fecha de checkout
+                        // Calcular la fecha de checkout sumando los días
+                        FechaCheckOut = ReservasVM.FechaCheckin.AddDays(ReservasVM.CantidadDias),
                         EstadoReserva = "Vigente", // Cambiar el estado de la reserva
-                        // Asignar otros campos según sea necesario
+                                                   // Asignar otros campos según sea necesario
                     };
 
                     _dbContext.Reserva.Add(reserva);
@@ -107,12 +108,12 @@ namespace HotelManager.Controllers
                     {
                         ModelState.AddModelError(string.Empty, "No se guardaron los cambios correctamente. Por favor, inténtelo de nuevo.");
                     }
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "El modelo no es válido. Por favor, corrige los errores.");
-                }
-            }
+                //}
+                //else
+                //{
+                //    ModelState.AddModelError(string.Empty, "El modelo no es válido. Por favor, corrige los errores.");
+                //}
+            }  
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error en la acción Insertar: {ex.ToString()}");
@@ -123,6 +124,7 @@ namespace HotelManager.Controllers
             ViewBag.Habitaciones = ObtenerHabitacionesSelectList();
             return View(ReservasVM);
         }
+
 
         private SelectList ObtenerHabitacionesSelectList()
         {
