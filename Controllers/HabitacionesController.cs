@@ -32,6 +32,7 @@ namespace HotelManager.Controllers
                 TipoHabitacion = h.TipoHabitacion,
                 Tarifa = h.Tarifa,
                 Descripcion = h.Descripcion,
+                Disponibilidad = h.Disponibilidad,
                 // Mapear otros campos según sea necesario
             }).ToList();
 
@@ -152,12 +153,12 @@ namespace HotelManager.Controllers
         [HttpGet]
         public IActionResult Eliminar(Guid id)
         {
-            Debug.WriteLine($"Entrando a get");
+            
             var habitacion = _dbContext.Habitacion.FirstOrDefault(h => h.IDHabitacion == id);
 
             if (habitacion == null)
             {
-                Debug.WriteLine($"Entrando a if get");
+                
                 return NotFound();
             }
 
@@ -174,23 +175,21 @@ namespace HotelManager.Controllers
             };
 
             return View(habitacionVM);
-            Debug.WriteLine($"retorno");
         }
 
         [HttpPost]
         public IActionResult EliminarConfirmacion(Guid id)
         {
-                    Debug.WriteLine($"Entrando a try del post");
+                    
                     try
             {
                 var habitacion = _dbContext.Habitacion.FirstOrDefault(h => h.IDHabitacion == id);
 
                 if (habitacion == null)
                 {
-                            Debug.WriteLine($"Entro a if post");
                             return NotFound();
                 }
-                Debug.WriteLine($"Salio de if");
+                
                 _dbContext.Habitacion.Remove(habitacion);
                 _dbContext.SaveChanges();
 
@@ -203,8 +202,15 @@ namespace HotelManager.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-
-            }
-
+        [HttpGet]
+        public IActionResult Reservar(Guid id)
+        {
+            // Aquí puedes implementar la lógica necesaria para reservar una habitación
+            // y luego redirigir a la página de Reservas
+            return RedirectToAction("Index", "Reservas");
         }
+
+    }
+
+}
 
