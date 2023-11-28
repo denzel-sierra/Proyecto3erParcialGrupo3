@@ -10,6 +10,12 @@
     <div class="col-md-4">
         <form asp-action="Insertar" method="post">
             <div class="form-group">
+                <label asp-for="Numero" class="control-label"></label>
+                <input asp-for="Numero" type="number" class="form-control" />
+                <span asp-validation-for="Numero" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
                 <label asp-for="TipoHabitacion" class="control-label"></label>
                 <input asp-for="TipoHabitacion" class="form-control" />
                 <span asp-validation-for="TipoHabitacion" class="text-danger"></span>

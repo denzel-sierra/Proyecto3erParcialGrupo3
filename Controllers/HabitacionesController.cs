@@ -26,6 +26,7 @@ namespace HotelManager.Controllers
             var habitacionesViewModel = habitaciones.Select(h => new HabitacionesVM
             {
                 IDHabitacion = h.IDHabitacion,
+                Numero = h.Numero,
                 TipoHabitacion = h.TipoHabitacion,
                 Tarifa = h.Tarifa,
                 Descripcion = h.Descripcion,
@@ -54,6 +55,7 @@ namespace HotelManager.Controllers
                     var habitacion = new Habitacion
                     {
                         IDHabitacion = Guid.NewGuid(),
+                        Numero = HabitacionVM.Numero,
                         TipoHabitacion = HabitacionVM.TipoHabitacion,
                         Tarifa = HabitacionVM.Tarifa,
                         Descripcion = HabitacionVM.Descripcion,

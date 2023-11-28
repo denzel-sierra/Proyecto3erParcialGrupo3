@@ -1,0 +1,56 @@
+﻿@model HotelManager.Models.VM.ReservasVM
+@{
+    ViewData["Title"] = "Insertar Nueva Reserva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Insertar Nueva Reserva</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Insertar" method="post">
+
+            <!-- IDUsuario -->
+            @if (User.IsInRole("Empleado"))
+            {
+                <div class="form-group">
+                    <label asp-for="IDUsuario" class="control-label"></label>
+                    <input asp-for="IDUsuario" class="form-control" />
+                    <span asp-validation-for="IDUsuario" class="text-danger"></span>
+                </div>
+            }
+
+            <!-- IDHabitacion -->
+            <div class="form-group">
+                <label asp-for="IDHabitacion" class="control-label"></label>
+                <select asp-for="IDHabitacion" asp-items="@ViewBag.Habitaciones" class="form-control"></select>
+                <span asp-validation-for="IDHabitacion" class="text-danger"></span>
+            </div>
+
+            <!-- FechaCheckin -->
+            <div class="form-group">
+                <label asp-for="FechaCheckin" class="control-label"></label>
+                <input asp-for="FechaCheckin" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="FechaCheckin" class="text-danger"></span>
+            </div>
+
+
+            <!-- Cantidad de Días -->
+            <div class="form-group">
+                <label>Cantidad de Días</label>
+                <input type="number" min="1" max="30" name="CantidadDias" class="form-control" value="1" />
+            </div>
+
+            
+            <!-- Agregar otros campos según sea necesario -->
+
+            <div class="form-group">
+                <input type="submit" value="Insertar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Volver a la Lista</a>
+</div>
