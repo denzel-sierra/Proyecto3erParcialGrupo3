@@ -1,166 +1,93 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using HotelManager.Data;
+using HotelManager.Models;
+using HotelManager.Models.VM;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using HotelManager.Data;
-using HotelManager.Models;
-using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
 
 namespace HotelManager.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class HabitacionesController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public HabitacionesController(ApplicationDbContext context)
+        private readonly ILogger<HabitacionesController> _logger;
+        private ApplicationDbContext _dbContext;
+        public HabitacionesController(ILogger<HabitacionesController> logger, ApplicationDbContext dbContext)
         {
-            _context = context;
+            _logger = logger;
+            _dbContext = dbContext;
         }
 
-        // GET: Habitaciones
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-              return _context.Habitacion != null ? 
-                          View(await _context.Habitacion.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Habitacion'  is null.");
-        }
+            var habitaciones = _dbContext.Habitacion.ToList();  // Obtener la lista de habitaciones desde la base de datos
 
-        // GET: Habitaciones/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null || _context.Habitacion == null)
+            // Puedes ajustar este mapeo según la estructura exacta de tu ViewModel
+            var habitacionesViewModel = habitaciones.Select(h => new HabitacionesVM
             {
-                return NotFound();
-            }
+                IDHabitacion = h.IDHabitacion,
+                TipoHabitacion = h.TipoHabitacion,
+                Tarifa = h.Tarifa,
+                Descripcion = h.Descripcion,
+                // Mapear otros campos según sea necesario
+            }).ToList();
 
-            var habitacion = await _context.Habitacion
-                .FirstOrDefaultAsync(m => m.IDHabitacion == id);
-            if (habitacion == null)
-            {
-                return NotFound();
-            }
-
-            return View(habitacion);
+            return View(habitacionesViewModel);
         }
 
-        // GET: Habitaciones/Create
-        public IActionResult Create()
+        [HttpGet]
+        public IActionResult Insertar()
         {
-            return View();
+            var habitacionViewModel = new HabitacionesVM(); // Puedes inicializarlo según sea necesario
+            return View(habitacionViewModel);
+
         }
 
-        // POST: Habitaciones/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IDHabitacion,TipoHabitacion,Tarifa,Disponibilidad,Descripcion")] Habitacion habitacion)
+        public IActionResult Insertar(HabitacionesVM HabitacionVM)
         {
-            if (ModelState.IsValid)
-            {
-                habitacion.IDHabitacion = Guid.NewGuid();
-                _context.Add(habitacion);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(habitacion);
-        }
-
-        // GET: Habitaciones/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null || _context.Habitacion == null)
-            {
-                return NotFound();
-            }
-
-            var habitacion = await _context.Habitacion.FindAsync(id);
-            if (habitacion == null)
-            {
-                return NotFound();
-            }
-            return View(habitacion);
-        }
-
-        // POST: Habitaciones/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("IDHabitacion,TipoHabitacion,Tarifa,Disponibilidad,Descripcion")] Habitacion habitacion)
-        {
-            if (id != habitacion.IDHabitacion)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
+            Debug.WriteLine("Ingresando a la acción Insertar");
+            //if (ModelState.IsValid)
+            //{
                 try
                 {
-                    _context.Update(habitacion);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!HabitacionExists(habitacion.IDHabitacion))
+                    var habitacion = new Habitacion
                     {
-                        return NotFound();
+                        IDHabitacion = Guid.NewGuid(),
+                        TipoHabitacion = HabitacionVM.TipoHabitacion,
+                        Tarifa = HabitacionVM.Tarifa,
+                        Descripcion = HabitacionVM.Descripcion,
+                        Disponibilidad = HabitacionVM.Disponibilidad,
+
+                        // Asigna otros campos según sea necesario
+                    };
+
+                    _dbContext.Habitacion.Add(habitacion);
+
+                    // Verifica si hay errores al guardar los cambios
+                    var saveResult = _dbContext.SaveChanges();
+                    Debug.WriteLine($"Número de cambios guardados: {saveResult}");
+                    if (saveResult > 0)
+                    {
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
-                        throw;
+                        ModelState.AddModelError(string.Empty, "No se guardaron los cambios correctamente. Por favor, inténtelo de nuevo.");
                     }
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(habitacion);
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error en la acción Insertar: {ex.Message}");
+                    _logger.LogError(ex, "Error al insertar la habitación.");
+                    ModelState.AddModelError(string.Empty, "Error al insertar la habitación. Por favor, inténtelo de nuevo.");
+                }
+            //}
+
+            // Si llegamos aquí, significa que hay errores de validación o de inserción.
+            // Devuelve la vista Insertar con el modelo para mostrar los mensajes de error.
+            return View(HabitacionVM);
         }
 
-        // GET: Habitaciones/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null || _context.Habitacion == null)
-            {
-                return NotFound();
-            }
-
-            var habitacion = await _context.Habitacion
-                .FirstOrDefaultAsync(m => m.IDHabitacion == id);
-            if (habitacion == null)
-            {
-                return NotFound();
-            }
-
-            return View(habitacion);
-        }
-
-        // POST: Habitaciones/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            if (_context.Habitacion == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Habitacion'  is null.");
-            }
-            var habitacion = await _context.Habitacion.FindAsync(id);
-            if (habitacion != null)
-            {
-                _context.Habitacion.Remove(habitacion);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool HabitacionExists(Guid id)
-        {
-          return (_context.Habitacion?.Any(e => e.IDHabitacion == id)).GetValueOrDefault();
-        }
     }
 }
