@@ -1,54 +1,35 @@
-﻿@model IEnumerable<HotelManager.Models.Habitacion>
+﻿@model List<HotelManager.Models.VM.HabitacionesVM>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista de Habitaciones";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Lista de Habitaciones</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TipoHabitacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tarifa)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Disponibilidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descripcion)
-            </th>
-            <th></th>
+            
+            <th>Tipo de Habitación</th>
+            <th>Tarifa</th>
+            <th>Descripcion</th>
+            
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TipoHabitacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tarifa)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Disponibilidad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IDHabitacion">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IDHabitacion">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IDHabitacion">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var habitacion in Model)
+        {
+            <tr>
+                
+                <td>@habitacion.TipoHabitacion</td>
+                <td>@habitacion.Tarifa</td>
+                <td>@habitacion.Descripcion</td>
+                
+            </tr>
+        }
     </tbody>
 </table>
+<form asp-action="Insertar" method="get">
+    <button type="submit" class="btn btn-primary">Insertar Nueva Habitación</button>
+</form>
