@@ -2,12 +2,14 @@
 using HotelManager.Models;
 using HotelManager.Models.VM;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
 
 namespace HotelManager.Controllers
 {
+    [Authorize (Roles = "Admin")]
     public class HabitacionesController : Controller
     {
         private readonly ILogger<HabitacionesController> _logger;
@@ -26,9 +28,11 @@ namespace HotelManager.Controllers
             var habitacionesViewModel = habitaciones.Select(h => new HabitacionesVM
             {
                 IDHabitacion = h.IDHabitacion,
+                Numero = h.Numero,
                 TipoHabitacion = h.TipoHabitacion,
                 Tarifa = h.Tarifa,
                 Descripcion = h.Descripcion,
+                Disponibilidad = h.Disponibilidad,
                 // Mapear otros campos según sea necesario
             }).ToList();
 
@@ -54,6 +58,7 @@ namespace HotelManager.Controllers
                     var habitacion = new Habitacion
                     {
                         IDHabitacion = Guid.NewGuid(),
+                        Numero = HabitacionVM.Numero,
                         TipoHabitacion = HabitacionVM.TipoHabitacion,
                         Tarifa = HabitacionVM.Tarifa,
                         Descripcion = HabitacionVM.Descripcion,
@@ -88,6 +93,124 @@ namespace HotelManager.Controllers
             // Devuelve la vista Insertar con el modelo para mostrar los mensajes de error.
             return View(HabitacionVM);
         }
+        [HttpGet]
+        public IActionResult Editar(Guid id)
+        {
+            var habitacion = _dbContext.Habitacion.FirstOrDefault(h => h.IDHabitacion == id);
+
+            if (habitacion == null)
+            {
+                return NotFound();
+            }
+
+            var habitacionVM = new HabitacionesVM
+            {
+                IDHabitacion = habitacion.IDHabitacion,
+                Numero = habitacion.Numero,
+                TipoHabitacion = habitacion.TipoHabitacion,
+                Tarifa = habitacion.Tarifa,
+                Disponibilidad = habitacion.Disponibilidad,
+                Descripcion = habitacion.Descripcion,
+                // Mapea otros campos según sea necesario
+            };
+
+            return View(habitacionVM);
+        }
+        [HttpPost]
+        public IActionResult GuardarEdicion(HabitacionesVM habitacionVM)
+        {
+            //if (ModelState.IsValid)
+            //{
+                try
+                {
+                    var habitacion = _dbContext.Habitacion.FirstOrDefault(h => h.IDHabitacion == habitacionVM.IDHabitacion);
+
+                    if (habitacion == null)
+                    {
+                        return NotFound();
+                    }
+                    habitacion.IDHabitacion = habitacionVM.IDHabitacion;
+                    habitacion.Numero = habitacionVM.Numero;
+                    habitacion.TipoHabitacion = habitacionVM.TipoHabitacion;
+                    habitacion.Tarifa = habitacionVM.Tarifa;
+                    habitacion.Disponibilidad = habitacionVM.Disponibilidad;
+                    habitacion.Descripcion = habitacionVM.Descripcion;
+                    // Actualiza otros campos según sea necesario
+
+                    _dbContext.SaveChanges();
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error al guardar la edición de la habitación.");
+                    ModelState.AddModelError(string.Empty, "Error al guardar la edición de la habitación. Por favor, inténtelo de nuevo.");
+                }
+            //}
+
+            return View("Editar", habitacionVM);
+        }
+        [HttpGet]
+        public IActionResult Eliminar(Guid id)
+        {
+            
+            var habitacion = _dbContext.Habitacion.FirstOrDefault(h => h.IDHabitacion == id);
+
+            if (habitacion == null)
+            {
+                
+                return NotFound();
+            }
+
+            var habitacionVM = new HabitacionesVM
+            {
+                IDHabitacion = habitacion.IDHabitacion,
+                Numero = habitacion.Numero,
+                TipoHabitacion = habitacion.TipoHabitacion,
+                Tarifa = habitacion.Tarifa,
+                Disponibilidad = habitacion.Disponibilidad,
+                Descripcion = habitacion.Descripcion,
+
+                // Mapea otros campos según sea necesario
+            };
+
+            return View(habitacionVM);
+        }
+
+        [HttpPost]
+        public IActionResult EliminarConfirmacion(Guid id)
+        {
+                    
+                    try
+            {
+                var habitacion = _dbContext.Habitacion.FirstOrDefault(h => h.IDHabitacion == id);
+
+                if (habitacion == null)
+                {
+                            return NotFound();
+                }
+                
+                _dbContext.Habitacion.Remove(habitacion);
+                _dbContext.SaveChanges();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar la habitación.");
+                // Puedes manejar errores y mostrar un mensaje al usuario si es necesario
+                return RedirectToAction(nameof(Index));
+            }
+        }
+        [HttpGet]
+        public IActionResult Reservar(Guid id)
+        {
+            // Aquí puedes implementar la lógica necesaria para reservar una habitación
+            // y luego redirigir a la página de Reservas
+            return RedirectToAction("Index", "Reservas");
+        }
 
     }
+
 }
+

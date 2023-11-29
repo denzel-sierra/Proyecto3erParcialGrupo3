@@ -1,20 +1,21 @@
 ﻿@model HotelManager.Models.VM.HabitacionesVM
+
 @{
-    ViewData["Title"] = "Insertar Nueva Habitación";
+    ViewData["Title"] = "Editar Habitación";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Insertar Nueva Habitación</h1>
+<h1>Editar Habitación</h1>
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Insertar" method="post">
+        <form asp-action="GuardarEdicion" method="post">
+            <input type="hidden" asp-for="IDHabitacion" />
             <div class="form-group">
                 <label asp-for="Numero" class="control-label"></label>
                 <input asp-for="Numero" type="number" class="form-control" />
                 <span asp-validation-for="Numero" class="text-danger"></span>
             </div>
-
             <div class="form-group">
                 <label asp-for="TipoHabitacion" class="control-label"></label>
                 <input asp-for="TipoHabitacion" class="form-control" />
@@ -34,16 +35,14 @@
             </div>
 
             <div class="form-group">
-            <div class="form-check">
-                <input asp-for="Disponibilidad" class="form-check-input" />
-                <label class="form-check-label" asp-for="Disponibilidad">Disponible</label>
-                <input type="hidden" asp-for="Disponibilidad" /> <!-- Agrega un campo oculto para garantizar que el valor se envíe correctamente -->
+                <div class="form-check">
+                    <input asp-for="Disponibilidad" class="form-check-input" />
+                    <label class="form-check-label" asp-for="Disponibilidad">Disponible</label>
+                </div>
             </div>
-            </div>
-
 
             <div class="form-group">
-                <input type="submit" value="Insertar" class="btn btn-primary" />
+                <input type="submit" value="Guardar Cambios" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -52,4 +51,3 @@
 <div>
     <a asp-action="Index">Volver a la Lista</a>
 </div>
-

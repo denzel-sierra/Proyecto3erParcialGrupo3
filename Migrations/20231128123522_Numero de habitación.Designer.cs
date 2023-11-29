@@ -4,6 +4,7 @@ using HotelManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231128123522_Numero de habitación")]
+    partial class Numerodehabitación
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -351,7 +353,7 @@ namespace HotelManager.Migrations
                     b.Property<DateTime>("FechaCheckin")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("IDFactura")
+                    b.Property<Guid>("IDFactura")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IDHabitacion")
@@ -585,7 +587,9 @@ namespace HotelManager.Migrations
                 {
                     b.HasOne("HotelManager.Models.EncabezadoFactura", "EncabezadoFactura")
                         .WithMany("Reservas")
-                        .HasForeignKey("IDFactura");
+                        .HasForeignKey("IDFactura")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HotelManager.Models.Habitacion", "Habitacion")
                         .WithMany("Reservas")
