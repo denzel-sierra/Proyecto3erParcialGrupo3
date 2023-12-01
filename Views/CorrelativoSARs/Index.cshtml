@@ -1,0 +1,78 @@
+﻿@model IEnumerable<HotelManager.Models.CorrelativoSAR>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NumeroCAI)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumeroInicial)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumeroFinal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UltimoUtilizado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaInicial)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaLimite)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaFinal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Finalizado)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroCAI)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroInicial)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroFinal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UltimoUtilizado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaInicial)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaLimite)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaFinal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Finalizado)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IDCorrelativoSAR">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IDCorrelativoSAR">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IDCorrelativoSAR">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

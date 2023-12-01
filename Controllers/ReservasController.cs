@@ -1,141 +1,217 @@
-﻿using HotelManager.Data;
-using HotelManager.Models;
-using HotelManager.Models.VM;
-using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
+using HotelManager.Data;
+using HotelManager.Models;
 
 namespace HotelManager.Controllers
 {
-    [Authorize]
     public class ReservasController : Controller
     {
-        private readonly ILogger<ReservasController> _logger;
-        private ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _context;
 
-        public ReservasController(ILogger<ReservasController> logger, ApplicationDbContext dbContext)
+        // Constructor del controlador que recibe una instancia de ApplicationDbContext
+        public ReservasController(ApplicationDbContext context)
         {
-            _logger = logger;
-            _dbContext = dbContext;
+            _context = context;
         }
 
-        // Acción para mostrar la lista de reservas
-        public IActionResult Index()
+        // GET: Reservas/Index
+        // Muestra la lista de reservas con detalles de ApplicationUser, EncabezadoFactura y Habitacion
+        public async Task<IActionResult> Index()
         {
-            var reservas = _dbContext.Reserva.Include(r => r.Habitacion).ToList();
-            var reservasViewModel = reservas.Select(r => new ReservasVM
-            {
-                IDReserva = r.IDReserva,
-                IDUsuario = r.IDUsuario,
-                IDHabitacion = r.IDHabitacion,
-                IDFactura = r.IDFactura,
-                FechaCheckin = r.FechaCheckin,
-                FechaCheckOut = r.FechaCheckOut,
-                EstadoReserva = r.EstadoReserva,
-                Habitacion = new HabitacionesVM
-                {
-                    IDHabitacion = r.Habitacion.IDHabitacion,
-                    Numero = r.Habitacion.Numero,
-                    TipoHabitacion = r.Habitacion.TipoHabitacion,
-                    Tarifa = r.Habitacion.Tarifa,
-                    Descripcion = r.Habitacion.Descripcion,
-                    Disponibilidad = r.Habitacion.Disponibilidad,
-                }
-                // Puedes mapear otros campos según sea necesario
-            }).ToList();
-
-            return View(reservasViewModel);
+            var applicationDbContext = _context.Reserva.Include(r => r.ApplicationUser).Include(r => r.EncabezadoFactura).Include(r => r.Habitacion);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // Acción para mostrar el formulario de inserción de reserva
-        [HttpGet]
-        public IActionResult Insertar()
+        // GET: Reservas/Details/5
+        // Muestra los detalles de una reserva específica con detalles de ApplicationUser, EncabezadoFactura y Habitacion
+        public async Task<IActionResult> Details(Guid? id)
         {
-            var reservaViewModel = new ReservasVM();
-            ViewBag.Habitaciones = ObtenerHabitacionesSelectList();
-
-            if (User.IsInRole("Empleado"))
+            // Validación de parámetros
+            if (id == null || _context.Reserva == null)
             {
-                reservaViewModel.IDUsuario = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            }
-            else
-            {
-                reservaViewModel.IDUsuario = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                return NotFound();
             }
 
-            return View(reservaViewModel);
+            // Obtener la reserva con detalles de ApplicationUser, EncabezadoFactura y Habitacion
+            var reserva = await _context.Reserva
+                .Include(r => r.ApplicationUser)
+                .Include(r => r.EncabezadoFactura)
+                .Include(r => r.Habitacion)
+                .FirstOrDefaultAsync(m => m.IDReserva == id);
+
+            // Validación de existencia de la reserva
+            if (reserva == null)
+            {
+                return NotFound();
+            }
+
+            return View(reserva);
         }
 
-        // Acción para procesar la inserción de reserva
+        // GET: Reservas/Create
+        // Muestra el formulario para crear una nueva reserva con listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
+        public IActionResult Create()
+        {
+            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id");
+            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario");
+            ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion");
+            return View();
+        }
+
+        // POST: Reservas/Create
+        // Procesa la creación de una nueva reserva, con validación del modelo y redirección a la lista de reservas
         [HttpPost]
-        public IActionResult Insertar(ReservasVM ReservasVM)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("IDReserva,IDUsuario,IDHabitacion,IDFactura,FechaCheckin,FechaCheckOut,EstadoReserva")] Reserva reserva)
         {
-            Debug.WriteLine("Ingresando a la acción Insertar");
 
+            // Asignar un nuevo GUID como ID de la reserva
+            reserva.IDReserva = Guid.NewGuid();
+            // Agregar la reserva al contexto y guardar los cambios
+            _context.Add(reserva);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+            // Recargar listas desplegables en caso de error
+            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", reserva.IDUsuario);
+            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario", reserva.IDFactura);
+            ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion", reserva.IDHabitacion);
+            return View(reserva);
+        }
+
+        // GET: Reservas/Edit/5
+        // Muestra el formulario para editar una reserva existente con listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
+        public async Task<IActionResult> Edit(Guid? id)
+        {
+            // Validación de parámetros
+            if (id == null || _context.Reserva == null)
+            {
+                return NotFound();
+            }
+
+            // Obtener la reserva a editar
+            var reserva = await _context.Reserva.FindAsync(id);
+
+            // Validación de existencia de la reserva
+            if (reserva == null)
+            {
+                return NotFound();
+            }
+
+            // Cargar listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
+            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", reserva.IDUsuario);
+            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario", reserva.IDFactura);
+            ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion", reserva.IDHabitacion);
+            return View(reserva);
+        }
+
+        // POST: Reservas/Edit/5
+        // Procesa la edición de una reserva existente, con validación del modelo y redirección a la lista de reservas
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, [Bind("IDReserva,IDUsuario,IDHabitacion,IDFactura,FechaCheckin,FechaCheckOut,EstadoReserva")] Reserva reserva)
+        {
+            // Validación de igualdad de IDs
+            if (id != reserva.IDReserva)
+            {
+                return NotFound();
+            }
             try
             {
-                //if (ModelState.IsValid)
-                //{
-                    var reserva = new Reserva
-                    {
-                        IDReserva = Guid.NewGuid(),
-                        IDUsuario = ReservasVM.IDUsuario,
-                        IDHabitacion = ReservasVM.IDHabitacion,
-                        IDFactura = null,
-                        FechaCheckin = ReservasVM.FechaCheckin,
-                        // Calcular la fecha de checkout sumando los días
-                        FechaCheckOut = ReservasVM.FechaCheckin.AddDays(ReservasVM.CantidadDias),
-                        EstadoReserva = "Vigente", // Cambiar el estado de la reserva
-                                                   // Asignar otros campos según sea necesario
-                    };
-
-                    _dbContext.Reserva.Add(reserva);
-
-                    var saveResult = _dbContext.SaveChanges();
-                    Debug.WriteLine($"Número de cambios guardados: {saveResult}");
-
-                    if (saveResult > 0)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "No se guardaron los cambios correctamente. Por favor, inténtelo de nuevo.");
-                    }
-                //}
-                //else
-                //{
-                //    ModelState.AddModelError(string.Empty, "El modelo no es válido. Por favor, corrige los errores.");
-                //}
-            }  
-            catch (Exception ex)
+                // Actualizar la reserva en el contexto y guardar los cambios
+                _context.Update(reserva);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
             {
-                Debug.WriteLine($"Error en la acción Insertar: {ex.ToString()}");
-                _logger.LogError(ex, "Error al insertar la reserva.");
-                ModelState.AddModelError(string.Empty, "Error al insertar la reserva. Por favor, inténtelo de nuevo.");
+                // Manejo de excepciones de concurrencia
+                if (!ReservaExists(reserva.IDReserva))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+
+            // Redirección a la lista de reservas
+            return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Habitaciones = ObtenerHabitacionesSelectList();
-            return View(ReservasVM);
+            // Recargar listas desplegables en caso de error
+            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", reserva.IDUsuario);
+            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario", reserva.IDFactura);
+            ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion", reserva.IDHabitacion);
+            return View(reserva);
         }
 
-
-        private SelectList ObtenerHabitacionesSelectList()
+        // GET: Reservas/Delete/5
+        // Muestra la página de confirmación de eliminación de una reserva
+        public async Task<IActionResult> Delete(Guid? id)
         {
-            var habitaciones = _dbContext.Habitacion.ToList();
-            var habitacionesSelectList = habitaciones.Select(h => new
+            // Validación de parámetros
+            if (id == null || _context.Reserva == null)
             {
-                Id = h.IDHabitacion,
-                DisplayText = $"{h.Numero} - {h.TipoHabitacion}"
-            }).ToList();
+                return NotFound();
+            }
 
-            return new SelectList(habitacionesSelectList, "Id", "DisplayText");
+            // Obtener la reserva a eliminar con detalles de ApplicationUser, EncabezadoFactura y Habitacion
+            var reserva = await _context.Reserva
+                .Include(r => r.ApplicationUser)
+                .Include(r => r.EncabezadoFactura)
+                .Include(r => r.Habitacion)
+                .FirstOrDefaultAsync(m => m.IDReserva == id);
+
+            // Validación de existencia de la reserva
+            if (reserva == null)
+            {
+                return NotFound();
+            }
+
+            // Mostrar la página de confirmación de eliminación
+            return View(reserva);
+        }
+
+        // POST: Reservas/Delete/5
+        // Procesa la eliminación de una reserva y redirecciona a la lista de reservas
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            // Validación de existencia del conjunto de entidades
+            if (_context.Reserva == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Reserva' is null.");
+            }
+
+            // Buscar la reserva por ID
+            var reserva = await _context.Reserva.FindAsync(id);
+
+            // Validar la existencia de la reserva antes de intentar eliminarla
+            if (reserva != null)
+            {
+                // Eliminar la reserva del contexto
+                _context.Reserva.Remove(reserva);
+            }
+
+            // Guardar los cambios en la base de datos
+            await _context.SaveChangesAsync();
+
+            // Redirección a la lista de reservas
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Verificación de existencia de una reserva
+        private bool ReservaExists(Guid id)
+        {
+            // Verificar la existencia de una reserva con el ID proporcionado
+            return (_context.Reserva?.Any(e => e.IDReserva == id)).GetValueOrDefault();
         }
     }
 }

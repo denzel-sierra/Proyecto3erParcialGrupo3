@@ -79,7 +79,12 @@ namespace HotelManager.Areas.Identity.Pages.Account
             [Required(ErrorMessage = "El campo Telefono es obligatorio.")]
             [Display(Name = "Teléfono")]
             public string Telefono { get; set; }
+
+            [Required(ErrorMessage = "El campo Número de Identidad es obligatorio.")]
+            [Display(Name = "Número de Identidad")]
+            public string NumeroIdentidad { get; set; }
         }
+
 
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -96,9 +101,10 @@ namespace HotelManager.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                user.Direccion = Input.Direccion;  // Aegurarse de asignar la propiedad Direccion
-                user.Nombre = Input.Nombre;  // Aegurarse de asignar la propiedad Nombre
-                user.Telefono = Input.Telefono;  // Aegurarse de asignar la propiedad Telefono
+                user.Direccion = Input.Direccion;
+                user.Nombre = Input.Nombre;
+                user.Telefono = Input.Telefono;
+                user.NumeroIdentidad = Input.NumeroIdentidad;
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);

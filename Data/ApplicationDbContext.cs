@@ -13,6 +13,8 @@ namespace HotelManager.Data
         }
         // Entidades
         //
+        //--- Usuarios
+        public DbSet<ApplicationUser> ApplicationUser { get; set; }
         //--- Cita
         public DbSet<Cita> Cita { get; set; }
         //--- CorrelativoSAR

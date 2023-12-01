@@ -4,6 +4,7 @@ using HotelManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231201072826_CrearCampoNumeroIdentidad")]
+    partial class CrearCampoNumeroIdentidad
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,10 +64,6 @@ namespace HotelManager.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NumeroIdentidad")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -261,7 +259,7 @@ namespace HotelManager.Migrations
 
                     b.Property<string>("IDUsuario")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ImpuestoFactura")
                         .HasColumnType("decimal(8,2)")
@@ -282,8 +280,6 @@ namespace HotelManager.Migrations
                     b.HasKey("IDFactura");
 
                     b.HasIndex("CorrelativoSARIDCorrelativoSAR");
-
-                    b.HasIndex("IDUsuario");
 
                     b.ToTable("EncabezadoFactura");
                 });
@@ -367,15 +363,17 @@ namespace HotelManager.Migrations
 
                     b.Property<string>("IDUsuario")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NumeroIdentidad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IDReserva");
 
                     b.HasIndex("IDFactura");
 
                     b.HasIndex("IDHabitacion");
-
-                    b.HasIndex("IDUsuario");
 
                     b.ToTable("Reserva");
                 });
@@ -589,14 +587,6 @@ namespace HotelManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HotelManager.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("IDUsuario")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
                     b.Navigation("CorrelativoSAR");
                 });
 
@@ -611,14 +601,6 @@ namespace HotelManager.Migrations
                         .HasForeignKey("IDHabitacion")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("HotelManager.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("IDUsuario")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
 
                     b.Navigation("EncabezadoFactura");
 

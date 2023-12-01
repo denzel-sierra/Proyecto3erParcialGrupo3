@@ -1,0 +1,90 @@
+﻿@model IEnumerable<HotelManager.Models.EncabezadoFactura>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IDCorrelativoSAR)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IDEmpleado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumeroFacturaSAR)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaFactura)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SubTotalFactura)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DescuentoFactura)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImpuestoFactura)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalFactura)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Eliminada)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ApplicationUser)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IDCorrelativoSAR)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IDEmpleado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroFacturaSAR)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaFactura)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubTotalFactura)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DescuentoFactura)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ImpuestoFactura)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalFactura)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Eliminada)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApplicationUser.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IDFactura">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IDFactura">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IDFactura">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

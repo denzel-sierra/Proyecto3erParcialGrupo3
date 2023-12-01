@@ -14,6 +14,12 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="form-floating">
+                    <input asp-for="Input.NumeroIdentidad" class="form-control" />
+                    <label asp-for="Input.NumeroIdentidad">Número de Identidad</label>
+                    <span asp-validation-for="Input.NumeroIdentidad" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating">
                     <input asp-for="Input.Nombre" class="form-control" />
                     <label asp-for="Input.Nombre">Nombre</label>
                     <span asp-validation-for="Input.Nombre" class="text-danger"></span>

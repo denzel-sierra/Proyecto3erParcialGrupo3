@@ -10,7 +10,5 @@ namespace HotelManager.Models.VM
         public decimal Tarifa { get; set; }
         public bool Disponibilidad { get; set; }
         public string Descripcion { get; set; }
-
-        public ICollection<ReservasVM> Reservas { get; set; }
     }
 }

@@ -66,6 +66,8 @@ namespace HotelManager.Data
                 builder.HasMany(a => a.Reservas).WithOne(a => a.EncabezadoFactura).HasForeignKey(a => a.IDFactura);
                 builder.HasMany(a => a.DetalleProductoFacturas).WithOne(a => a.EncabezadoFactura).HasForeignKey(a => a.IDFactura);
                 builder.HasMany(a => a.DetalleServicioFacturas).WithOne(a => a.EncabezadoFactura).HasForeignKey(a => a.IDFactura);
+                builder.HasOne(r => r.ApplicationUser).WithMany().HasForeignKey(r => r.IDUsuario).IsRequired(true);
+
             }
         }
         public class HabitacionConfig : IEntityTypeConfiguration<Habitacion>
@@ -106,6 +108,8 @@ namespace HotelManager.Data
                 builder.HasKey(x => x.IDReserva);
 
                 builder.Property(s => s.EstadoReserva).HasColumnType("varchar(255)");
+
+                builder.HasOne(r => r.ApplicationUser).WithMany().HasForeignKey(r => r.IDUsuario).IsRequired(true);
 
             }
         }

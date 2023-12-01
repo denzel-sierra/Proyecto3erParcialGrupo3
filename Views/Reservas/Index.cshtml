@@ -1,42 +1,66 @@
-﻿@model List<HotelManager.Models.VM.ReservasVM>
+﻿@model IEnumerable<HotelManager.Models.Reserva>
 
 @{
-    ViewData["Title"] = "Lista de Reservas";
+    ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Lista de Reservas</h1>
+<h1>Index</h1>
 
-<form asp-action="Insertar" method="get">
-    <button type="submit" class="btn btn-primary">Insertar Nueva Reserva</button>
-</form>
-
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
 <table class="table">
     <thead>
         <tr>
-            <th>ID Reserva</th>
-            <th>ID Usuario</th>
-            <th>ID Habitación</th>
-            <th>ID Factura</th>
-            <th>Fecha Check-in</th>
-            <th>Fecha Check-out</th>
-            <th>Estado Reserva</th>
-            <!-- Puedes agregar más columnas según sea necesario -->
+            <th>
+                @Html.DisplayNameFor(model => model.FechaCheckin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaCheckOut)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EstadoReserva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Habitacion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EncabezadoFactura)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ApplicationUser)
+            </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var reserva in Model)
-        {
-            <tr>
-                <td>@reserva.IDReserva</td>
-                <td>@reserva.IDUsuario</td>
-                <td>@reserva.Habitacion.TipoHabitacion</td>
-                <td>@reserva.IDFactura</td>
-                <td>@reserva.FechaCheckin.ToString("yyyy-MM-dd")</td>
-                <td>@reserva.FechaCheckOut.ToString("yyyy-MM-dd")</td>
-                <td>@reserva.EstadoReserva</td>
-                <!-- Agrega más celdas según sea necesario -->
-            </tr>
-        }
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaCheckin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaCheckOut)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EstadoReserva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Habitacion.IDHabitacion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EncabezadoFactura.IDUsuario)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApplicationUser.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IDReserva">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IDReserva">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IDReserva">Delete</a>
+            </td>
+        </tr>
+}
     </tbody>
 </table>

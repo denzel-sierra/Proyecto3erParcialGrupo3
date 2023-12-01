@@ -1,0 +1,78 @@
+﻿@model HotelManager.Models.EncabezadoFactura
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>EncabezadoFactura</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="IDCorrelativoSAR" class="control-label"></label>
+                <input asp-for="IDCorrelativoSAR" class="form-control" />
+                <span asp-validation-for="IDCorrelativoSAR" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IDEmpleado" class="control-label"></label>
+                <input asp-for="IDEmpleado" class="form-control" />
+                <span asp-validation-for="IDEmpleado" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IDUsuario" class="control-label"></label>
+                <select asp-for="IDUsuario" class ="form-control" asp-items="ViewBag.IDUsuario"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="NumeroFacturaSAR" class="control-label"></label>
+                <input asp-for="NumeroFacturaSAR" class="form-control" />
+                <span asp-validation-for="NumeroFacturaSAR" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaFactura" class="control-label"></label>
+                <input asp-for="FechaFactura" class="form-control" />
+                <span asp-validation-for="FechaFactura" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubTotalFactura" class="control-label"></label>
+                <input asp-for="SubTotalFactura" class="form-control" />
+                <span asp-validation-for="SubTotalFactura" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DescuentoFactura" class="control-label"></label>
+                <input asp-for="DescuentoFactura" class="form-control" />
+                <span asp-validation-for="DescuentoFactura" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImpuestoFactura" class="control-label"></label>
+                <input asp-for="ImpuestoFactura" class="form-control" />
+                <span asp-validation-for="ImpuestoFactura" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TotalFactura" class="control-label"></label>
+                <input asp-for="TotalFactura" class="form-control" />
+                <span asp-validation-for="TotalFactura" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Eliminada" /> @Html.DisplayNameFor(model => model.Eliminada)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
