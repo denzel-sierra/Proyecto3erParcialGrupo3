@@ -77,8 +77,6 @@ namespace HotelManager.Data
                 //llave
                 builder.HasKey(x => x.IDHabitacion);
 
-                builder.Property(s => s.TipoHabitacion).HasColumnType("varchar(255)");
-                builder.Property(s => s.Descripcion).HasColumnType("varchar(255)");
                 builder.Property(a => a.Tarifa).HasColumnType("decimal(8,2)").HasColumnName("Tarifa");
 
                 //llave foranea
@@ -123,6 +121,20 @@ namespace HotelManager.Data
                 builder.Property(s => s.NombreServicio).HasColumnType("varchar(255)");
                 builder.Property(s => s.Descripcion).HasColumnType("varchar(255)");
                 builder.Property(a => a.Tarifa).HasColumnType("decimal(8,2)").HasColumnName("Tarifa");
+
+            }
+        }
+
+        public class TipoHabitacionConfig : IEntityTypeConfiguration<TipoHabitacion>
+        {
+            public void Configure(EntityTypeBuilder<TipoHabitacion> builder)
+            {
+                builder.HasKey(x => x.IDTipoHabitacion);
+                builder.Property(x => x.Descripcion).HasColumnType("varchar(255)");
+                builder.Property(x => x.DescripcionLarga).HasColumnType("varchar(max)");
+
+                // Llave foranea
+                builder.HasMany(a => a.Habitaciones).WithOne(a => a.TipoHabitacion).HasForeignKey(a => a.IDTipoHabitacion);
 
             }
         }

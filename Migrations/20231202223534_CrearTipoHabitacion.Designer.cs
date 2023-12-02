@@ -4,6 +4,7 @@ using HotelManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231202223534_CrearTipoHabitacion")]
+    partial class CrearTipoHabitacion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -294,11 +296,12 @@ namespace HotelManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.Property<bool>("Disponibilidad")
                         .HasColumnType("bit");
-
-                    b.Property<Guid>("IDTipoHabitacion")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Numero")
                         .HasColumnType("int");
@@ -307,9 +310,11 @@ namespace HotelManager.Migrations
                         .HasColumnType("decimal(8,2)")
                         .HasColumnName("Tarifa");
 
-                    b.HasKey("IDHabitacion");
+                    b.Property<string>("TipoHabitacion")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
-                    b.HasIndex("IDTipoHabitacion");
+                    b.HasKey("IDHabitacion");
 
                     b.ToTable("Habitacion");
                 });
@@ -616,17 +621,6 @@ namespace HotelManager.Migrations
                     b.Navigation("CorrelativoSAR");
                 });
 
-            modelBuilder.Entity("HotelManager.Models.Habitacion", b =>
-                {
-                    b.HasOne("HotelManager.Models.TipoHabitacion", "TipoHabitacion")
-                        .WithMany("Habitaciones")
-                        .HasForeignKey("IDTipoHabitacion")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TipoHabitacion");
-                });
-
             modelBuilder.Entity("HotelManager.Models.Reserva", b =>
                 {
                     b.HasOne("HotelManager.Models.EncabezadoFactura", "EncabezadoFactura")
@@ -730,11 +724,6 @@ namespace HotelManager.Migrations
             modelBuilder.Entity("HotelManager.Models.ServicioHotel", b =>
                 {
                     b.Navigation("DetalleServicioFacturas");
-                });
-
-            modelBuilder.Entity("HotelManager.Models.TipoHabitacion", b =>
-                {
-                    b.Navigation("Habitaciones");
                 });
 #pragma warning restore 612, 618
         }

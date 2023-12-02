@@ -33,6 +33,8 @@ namespace HotelManager.Data
         public DbSet<Reserva> Reserva { get; set; }
         //--- ServicioHotel
         public DbSet<ServicioHotel> ServicioHotel { get; set; }
+        //--- TipoHabitacion}
+        public DbSet<TipoHabitacion> TipoHabitacion { get; set; }
 
         // Configuraciones
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -56,6 +58,7 @@ namespace HotelManager.Data
             modelBuilder.ApplyConfiguration(new ReservaConfig());
             // ServicioHotelConfig
             modelBuilder.ApplyConfiguration(new ServicioHotelConfig());
+            modelBuilder.ApplyConfiguration(new TipoHabitacionConfig());
         }
     }
 }

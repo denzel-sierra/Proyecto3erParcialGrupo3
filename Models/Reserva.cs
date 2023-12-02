@@ -20,9 +20,15 @@ namespace HotelManager.Models
         public ApplicationUser ApplicationUser { get; set; }
 
         // Campos exclusivos de las vistas
-
-        // Create
-        [NotMapped] // Esta propiedad no será mapeada a la base de datos
+        [NotMapped]
+        public string? NumeroIdentidad { get; set; }
+        [NotMapped]
+        public string? Nombre { get; set; }
+        [NotMapped]
+        public string? Telefono { get; set; }
+        [NotMapped]
+        public string? Direccion { get; set; }
+        [NotMapped]
         public int CantidadDias => (int)(FechaCheckOut - FechaCheckin).TotalDays;
 
     }

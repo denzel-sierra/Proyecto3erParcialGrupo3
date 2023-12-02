@@ -5,57 +5,118 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mx-auto">
+            <h1>Create</h1>
 
-<h4>Reserva</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <h4>Reserva</h4>
+            <hr />
+            <form asp-action="Create" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <!-- IDUsuario -->
-            <div class="form-group">
-                <label asp-for="IDUsuario" class="control-label"></label>
-                <select asp-for="IDUsuario" class="form-control" asp-items="ViewBag.IDUsuario"></select>
-            </div>
+                <!-- Agrega estos campos al formulario -->
+                <div class="form-group">
+                    <label asp-for="NumeroIdentidad" class="control-label"></label>
+                    <input asp-for="NumeroIdentidad" class="form-control" />
+                </div>
 
-            <!-- IDHabitacion -->
-            <div class="form-group">
-                <label asp-for="IDHabitacion" class="control-label"></label>
-                <select asp-for="IDHabitacion" class="form-control" asp-items="ViewBag.IDHabitacion"></select>
-            </div>
+                <div class="form-group">
+                    <label asp-for="Nombre" class="control-label"></label>
+                    <input asp-for="Nombre" class="form-control" />
+                </div>
 
-            <!-- IDFactura -->
-            <div class="form-group">
-                <label asp-for="IDFactura" class="control-label"></label>
-                <select asp-for="IDFactura" class="form-control" asp-items="ViewBag.IDFactura"></select>
-            </div>
+                <div class="form-group">
+                    <label asp-for="Telefono" class="control-label"></label>
+                    <input asp-for="Telefono" class="form-control" />
+                </div>
 
-            <!-- FechaCheckin -->
-            <div class="form-group">
-                <label asp-for="FechaCheckin" class="control-label"></label>
-                <input asp-for="FechaCheckin" class="form-control" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                <span asp-validation-for="FechaCheckin" class="text-danger"></span>
-            </div>
+                <div class="form-group">
+                    <label asp-for="Direccion" class="control-label"></label>
+                    <input asp-for="Direccion" class="form-control" />
+                </div>
 
-            <!-- FechaCheckOut -->
-            <div class="form-group">
-                <label asp-for="FechaCheckOut" class="control-label"></label>
-                <input asp-for="FechaCheckOut" class="form-control" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                <span asp-validation-for="FechaCheckOut" class="text-danger"></span>
-            </div>
+                <!-- Añade el botón de búsqueda -->
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary" id="btnBuscarUsuario">Buscar Usuario</button>
+                </div>
 
-            <!-- Cantidad de días -->
-            <div class="form-group">
-                <label for="CantidadDias" class="control-label">Cantidad de días</label>
-                <input id="CantidadDias" class="form-control" type="number" min="1" value="1" readonly />
-            </div>
+                <!-- Agrega esto después del botón de búsqueda -->
+                <!-- Este div contendrá la tabla de resultados -->
+                <div id="resultadosBusqueda" style="display: none;">
+                    <h4>Resultados de Búsqueda</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Número Identidad</th>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaResultadosBody">
+                            <!-- Aquí se agregarán dinámicamente las filas de resultados -->
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+                <!-- IDUsuario (campo de solo lectura) -->
+                <div class="form-group">
+                    <label asp-for="IDUsuario" class="control-label"></label>
+                    <input asp-for="IDUsuario" class="form-control" readonly />
+                </div>
+
+                <!-- IDHabitacion -->
+                <div class="form-group">
+                    <label asp-for="IDHabitacion" class="control-label"></label>
+                    <select asp-for="IDHabitacion" class="form-control" asp-items="ViewBag.IDHabitacion" onchange="updateTarifa()"></select>
+                </div>
+
+                <!-- TarifaHabitacion -->
+                <div class="form-group">
+                    <label for="TarifaHabitacion" class="control-label">Tarifa de la habitación</label>
+                    <input id="TarifaHabitacion" class="form-control" readonly />
+                </div>
+
+                <!-- IDFactura -->
+                <div class="form-group">
+                    <label asp-for="IDFactura" class="control-label"></label>
+                    <select asp-for="IDFactura" class="form-control" asp-items="ViewBag.IDFactura"></select>
+                </div>
+
+                <!-- FechaCheckin -->
+                <div class="form-group">
+                    <label asp-for="FechaCheckin" class="control-label"></label>
+                    <input asp-for="FechaCheckin" class="form-control" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" onchange="updateTarifa()" />
+                    <span asp-validation-for="FechaCheckin" class="text-danger"></span>
+                </div>
+
+                <!-- FechaCheckOut -->
+                <div class="form-group">
+                    <label asp-for="FechaCheckOut" class="control-label"></label>
+                    <input asp-for="FechaCheckOut" class="form-control" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" onchange="updateTarifa()" />
+                    <span asp-validation-for="FechaCheckOut" class="text-danger"></span>
+                </div>  
+
+                <!-- Cantidad de días -->
+                <div class="form-group">
+                    <label for="CantidadDias" class="control-label">Cantidad de días</label>
+                    <input id="CantidadDias" class="form-control" type="number" min="1" value="1" readonly />
+                </div>
+
+                <!-- TotalReserva -->
+                <div class="form-group">
+                    <label for="TotalReserva" class="control-label">Total de la reserva</label>
+                    <input id="TotalReserva" class="form-control" readonly />
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -96,8 +157,128 @@
                 }
 
                 $('#CantidadDias').val(diffInDays);
+                calcularTotalReserva(); // Llamar a la función para actualizar el total de la reserva
             });
         });
+
+        function updateTarifa() {
+            var habitacionId = $("#IDHabitacion").val();
+
+            if (habitacionId) {
+                $.ajax({
+                    url: '@Url.Action("GetTarifa", "Reservas")',
+                    type: 'GET',
+                    data: { id: habitacionId },
+                    success: function (tarifa) {
+                        // Formatear el valor como moneda con símbolo L
+                        var formattedTarifa = parseFloat(tarifa).toLocaleString('es-US', {
+                            style: 'currency',
+                            currency: 'HNL', // Cambia a la moneda local correspondiente
+                            minimumFractionDigits: 2
+                        });
+
+                        $("#TarifaHabitacion").val(formattedTarifa);
+
+                        // Calcular el total de la reserva
+                        var cantidadDias = parseFloat($("#CantidadDias").val());
+                        if (!isNaN(cantidadDias)) {
+                            var totalReserva = parseFloat(tarifa) * cantidadDias;
+
+                            // Formatear el total como moneda con símbolo L
+                            var formattedTotal = totalReserva.toLocaleString('es-US', {
+                                style: 'currency',
+                                currency: 'HNL', // Cambia a la moneda local correspondiente
+                                minimumFractionDigits: 2
+                            });
+
+                            $("#TotalReserva").val(formattedTotal);
+                        } else {
+                            $("#TotalReserva").val('');
+                        }
+                    },
+                    error: function () {
+                        console.log("Error al obtener la tarifa de la habitación");
+                        $("#TarifaHabitacion").val('');
+                        $("#TotalReserva").val('');
+                    }
+                });
+            } else {
+                $("#TarifaHabitacion").val('');
+                $("#TotalReserva").val('');
+            }
+        }
+
+        $(document).ready(function () {
+            $('#btnBuscarUsuario').click(function () {
+                buscarUsuario();
+            });
+
+            $('#NumeroIdentidad, #Nombre, #Telefono, #Direccion').keydown(function (e) {
+                if (e.keyCode === 13) {  // Verificar si se presiona la tecla Enter
+                    buscarUsuario();
+                    e.preventDefault();
+                }
+            });
+        });
+
+        function buscarUsuario() {
+            // Obtener valores de los campos de búsqueda
+            var numeroIdentidad = $("#NumeroIdentidad").val();
+            var nombre = $("#Nombre").val();
+            var telefono = $("#Telefono").val();
+            var direccion = $("#Direccion").val();
+
+            // Realizar la búsqueda del usuario
+            $.ajax({
+                url: '@Url.Action("SearchUsers", "Reservas")',
+                type: 'GET',
+                data: { numeroIdentidad: numeroIdentidad, nombre: nombre, telefono: telefono, direccion: direccion },
+                success: function (usuarios) {
+                    // Limpiar resultados anteriores
+                    $("#tablaResultadosBody").empty();
+
+                    // Verificar si se encontraron usuarios
+                    if (usuarios.length > 0) {
+                        // Mostrar la tabla de resultados
+                        $("#resultadosBusqueda").show();
+
+                        // Iterar sobre los usuarios y agregar filas a la tabla
+                        for (var i = 0; i < usuarios.length; i++) {
+                            var usuario = usuarios[i];
+
+                            // Construir la fila de la tabla
+                            var fila = "<tr>";
+                            fila += "<td>" + usuario.numeroIdentidad + "</td>";
+                            fila += "<td>" + usuario.nombre + "</td>";
+                            fila += "<td>" + usuario.telefono + "</td>";
+                            fila += "<td>" + usuario.direccion + "</td>";
+                            fila += "<td><button class='btn btn-primary' onclick='seleccionarUsuario(\"" + usuario.id + "\")'>Seleccionar</button></td>";
+                            fila += "</tr>";
+
+                            // Agregar la fila a la tabla
+                            $("#tablaResultadosBody").append(fila);
+                        }
+                    } else {
+                        // Ocultar la tabla de resultados si no se encontraron usuarios
+                        $("#resultadosBusqueda").hide();
+                        alert("Usuario no encontrado");
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error al buscar usuario");
+                }
+            });
+        }
+
+        function seleccionarUsuario(id) {
+            // Asignar el IDUsuario al campo oculto
+            $("#IDUsuario").val(id);
+        }
+
+
+
+
     </script>
 }
+
 

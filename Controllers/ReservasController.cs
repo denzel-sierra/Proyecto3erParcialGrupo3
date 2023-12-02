@@ -58,7 +58,7 @@ namespace HotelManager.Controllers
         // Muestra el formulario para crear una nueva reserva con listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
         public IActionResult Create()
         {
-            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id");
+            //ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id");
             ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario");
             ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion");
             return View();
@@ -73,6 +73,7 @@ namespace HotelManager.Controllers
 
             // Asignar un nuevo GUID como ID de la reserva
             reserva.IDReserva = Guid.NewGuid();
+            reserva.EstadoReserva = "Vigente";
             // Agregar la reserva al contexto y guardar los cambios
             _context.Add(reserva);
             await _context.SaveChangesAsync();
@@ -213,5 +214,34 @@ namespace HotelManager.Controllers
             // Verificar la existencia de una reserva con el ID proporcionado
             return (_context.Reserva?.Any(e => e.IDReserva == id)).GetValueOrDefault();
         }
+
+        // Obtener la tarifa de la habitación seleccionada
+        [HttpGet]
+        public IActionResult GetTarifa(Guid id)
+        {
+            var habitacion = _context.Habitacion.Find(id);
+            if (habitacion != null)
+            {
+                return Json(habitacion.Tarifa);
+            }
+
+            return Json(null);
+        }
+
+        public IActionResult SearchUsers(string numeroIdentidad, string nombre, string telefono, string direccion)
+        {
+            // Realiza la búsqueda de usuarios por varios campos
+            var users = _context.Users
+                .Where(u =>
+                    (string.IsNullOrEmpty(numeroIdentidad) || u.NumeroIdentidad.Contains(numeroIdentidad)) &&
+                    (string.IsNullOrEmpty(nombre) || u.Nombre.Contains(nombre)) &&
+                    (string.IsNullOrEmpty(telefono) || u.Telefono.Contains(telefono)) &&
+                    (string.IsNullOrEmpty(direccion) || u.Direccion.Contains(direccion)))
+                .Select(u => new { u.Id, u.Nombre, u.NumeroIdentidad, u.Telefono, u.Direccion })
+                .ToList();
+
+            return Json(users);
+        }
+
     }
 }
