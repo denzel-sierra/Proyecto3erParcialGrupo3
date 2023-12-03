@@ -48,7 +48,7 @@ namespace HotelManager.Controllers
         // GET: Habitaciones/Create
         public IActionResult Create()
         {
-            ViewData["IDTipoHabitacion"] = new SelectList(_context.TipoHabitacion, "IDTipoHabitacion", "IDTipoHabitacion");
+            ViewData["IDTipoHabitacion"] = new SelectList(_context.TipoHabitacion, "IDTipoHabitacion", "Descripcion");
             return View();
         }
 
@@ -162,6 +162,27 @@ namespace HotelManager.Controllers
         private bool HabitacionExists(Guid id)
         {
           return (_context.Habitacion?.Any(e => e.IDHabitacion == id)).GetValueOrDefault();
+        }
+        public IActionResult Reservar(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var habitacion = _context.Habitacion
+                .Include(h => h.TipoHabitacion)
+                .FirstOrDefault(m => m.IDHabitacion == id);
+
+            if (habitacion == null)
+            {
+                return NotFound();
+            }
+
+            // Aquí puedes implementar la lógica de reserva según tus requisitos.
+            // Puedes pasar el objeto habitacion o cualquier información adicional a la vista Reservar.cshtml.
+
+            return RedirectToAction("Create", "Reservas");
         }
     }
 }
