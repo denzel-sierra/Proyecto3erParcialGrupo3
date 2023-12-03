@@ -228,18 +228,19 @@ namespace HotelManager.Controllers
             return Json(null);
         }
 
-        public IActionResult SearchUsers(string numeroIdentidad, string nombre, string telefono, string direccion)
+        // Buscar usuarios
+        public IActionResult SearchUsers(string numeroIdentidad, string nombre, string telefono, string direccion, string userName)
         {
-            // Realiza la búsqueda de usuarios por varios campos
+            // Realiza la búsqueda de usuarios por varios campos, incluyendo correo electrónico
             var users = _context.Users
                 .Where(u =>
                     (string.IsNullOrEmpty(numeroIdentidad) || u.NumeroIdentidad.Contains(numeroIdentidad)) &&
                     (string.IsNullOrEmpty(nombre) || u.Nombre.Contains(nombre)) &&
                     (string.IsNullOrEmpty(telefono) || u.Telefono.Contains(telefono)) &&
-                    (string.IsNullOrEmpty(direccion) || u.Direccion.Contains(direccion)))
-                .Select(u => new { u.Id, u.Nombre, u.NumeroIdentidad, u.Telefono, u.Direccion })
+                    (string.IsNullOrEmpty(direccion) || u.Direccion.Contains(direccion)) &&
+                    (string.IsNullOrEmpty(userName) || u.UserName.Contains(userName)))
+                .Select(u => new { u.Id, u.Nombre, u.NumeroIdentidad, u.Telefono, u.Direccion, u.UserName })
                 .ToList();
-
             return Json(users);
         }
 

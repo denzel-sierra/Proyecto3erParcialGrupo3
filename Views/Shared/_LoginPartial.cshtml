@@ -13,18 +13,19 @@
                 if (User.IsInRole("Empleado"))
                 {
                     displayName = "Empleado: " + displayName;
+                    <a class="btn btn-info">@displayName</a>
                 }
                 else if (User.IsInRole("Admin"))
                 {
                     displayName = "Admin: " + displayName;
+                    <a class="btn btn-danger">@displayName</a>
                 }
             }
 
-            <a id="manage" class="nav-link text-dark">@displayName</a>
         </li>
         <li class="nav-item">
             <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button id="logout" type="submit" class="nav-link btn btn-link text-dark">Cerrar Sesión</button>
+                <button id="logout" type="submit" class=" btn btn-outline-secondary">Cerrar Sesión</button>
             </form>
         </li>
     }
