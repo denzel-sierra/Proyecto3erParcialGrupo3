@@ -10,6 +10,7 @@ namespace HotelManager.Models
         public string IDUsuario { get; set; }
         public Guid IDHabitacion { get; set; }
         public Guid? IDFactura { get; set; }
+
         [Required(ErrorMessage = "La fecha de check-in es obligatoria.")]
         [DataType(DataType.Date, ErrorMessage = "El campo debe ser una fecha.")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

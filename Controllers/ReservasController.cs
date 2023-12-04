@@ -56,11 +56,12 @@ namespace HotelManager.Controllers
 
         // GET: Reservas/Create
         // Muestra el formulario para crear una nueva reserva con listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
-        public IActionResult Create()
+        public IActionResult Create(Guid? idHabitacion)
         {
             //ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id");
-            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario");
-            ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion");
+            //ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario");
+            //ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion");
+            ViewData["IDHabitacion"] = idHabitacion;
             return View();
         }
 
