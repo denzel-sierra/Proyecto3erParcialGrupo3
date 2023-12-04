@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelManager.Data;
 using HotelManager.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelManager.Controllers
 {
@@ -46,6 +47,7 @@ namespace HotelManager.Controllers
         }
 
         // GET: Habitaciones/Create
+        [Authorize(Roles = "Admin,Empleado" )]
         public IActionResult Create()
         {
             ViewData["IDTipoHabitacion"] = new SelectList(_context.TipoHabitacion, "IDTipoHabitacion", "Descripcion");
@@ -55,6 +57,7 @@ namespace HotelManager.Controllers
         // POST: Habitaciones/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IDHabitacion,Numero,IDTipoHabitacion,Tarifa,Disponibilidad")] Habitacion habitacion)
@@ -70,6 +73,7 @@ namespace HotelManager.Controllers
         }
 
         // GET: Habitaciones/Edit/5
+        [Authorize(Roles = "Admin,Empleado")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.Habitacion == null)
@@ -82,13 +86,21 @@ namespace HotelManager.Controllers
             {
                 return NotFound();
             }
-            ViewData["IDTipoHabitacion"] = new SelectList(_context.TipoHabitacion, "IDTipoHabitacion", "IDTipoHabitacion", habitacion.IDTipoHabitacion);
+
+            // Obtén las descripciones en lugar de los IDs para cargar en la vista
+            var tipoHabitacionList = _context.TipoHabitacion.Select(th => new SelectListItem
+            {
+                Value = th.IDTipoHabitacion.ToString(),
+                Text = th.Descripcion
+            });
+
+            ViewData["IDTipoHabitacion"] = new SelectList(tipoHabitacionList, "Value", "Text", habitacion.IDTipoHabitacion);
+
             return View(habitacion);
         }
 
-        // POST: Habitaciones/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("IDHabitacion,Numero,IDTipoHabitacion,Tarifa,Disponibilidad")] Habitacion habitacion)
@@ -122,6 +134,7 @@ namespace HotelManager.Controllers
         }
 
         // GET: Habitaciones/Delete/5
+        [Authorize(Roles = "Admin,Empleado")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _context.Habitacion == null)
@@ -141,6 +154,7 @@ namespace HotelManager.Controllers
         }
 
         // POST: Habitaciones/Delete/5
+        [Authorize(Roles = "Admin,Empleado")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

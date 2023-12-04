@@ -1,50 +1,68 @@
 ﻿@model HotelManager.Models.Habitacion
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Habitacion";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mt-5 pt-5">
+            <h1 class="text-center">@ViewData["Title"]</h1>
 
-<h4>Habitacion</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IDHabitacion" />
-            <div class="form-group">
-                <label asp-for="Numero" class="control-label"></label>
-                <input asp-for="Numero" class="form-control" />
-                <span asp-validation-for="Numero" class="text-danger"></span>
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="IDHabitacion" />
+
+                <div class="form-group">
+                    <label asp-for="Numero" class="control-label">Número</label>
+                    <input asp-for="Numero" class="form-control" />
+                    <span asp-validation-for="Numero" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="IDTipoHabitacion" class="control-label">Tipo de Habitación</label>
+                    <select asp-for="IDTipoHabitacion" class="form-control" asp-items="ViewBag.IDTipoHabitacion"></select>
+                    <!-- Campo oculto para almacenar el IDTipoHabitacion seleccionado -->
+                    <input type="hidden" asp-for="IDTipoHabitacion" id="hiddenTipoHabitacion" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Tarifa" class="control-label">Tarifa</label>
+                    <input asp-for="Tarifa" class="form-control" />
+                    <span asp-validation-for="Tarifa" class="text-danger"></span>
+                </div>
+
+                <div class="form-group form-check">
+                    <input class="form-check-input" asp-for="Disponibilidad" />
+                    <label class="form-check-label" for="Disponibilidad">@Html.DisplayNameFor(model => model.Disponibilidad)</label>
+                </div>
+
+                <div class="form-group text-center">
+                    <input type="submit" value="Guardar" class="btn btn-primary" />
+                </div>
+            </form>
+
+            <div class="text-center">
+                <a asp-action="Index">Volver a la lista</a>
             </div>
-            <div class="form-group">
-                <label asp-for="IDTipoHabitacion" class="control-label"></label>
-                <select asp-for="IDTipoHabitacion" class="form-control" asp-items="ViewBag.IDTipoHabitacion"></select>
-                <span asp-validation-for="IDTipoHabitacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tarifa" class="control-label"></label>
-                <input asp-for="Tarifa" class="form-control" />
-                <span asp-validation-for="Tarifa" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Disponibilidad" /> @Html.DisplayNameFor(model => model.Disponibilidad)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            setHiddenField();
+        });
+
+        function setHiddenField() {
+            var selectedValue = document.getElementById("IDTipoHabitacion").value;
+            document.getElementById("hiddenTipoHabitacion").value = selectedValue;
+        }
+    </script>
 }
+

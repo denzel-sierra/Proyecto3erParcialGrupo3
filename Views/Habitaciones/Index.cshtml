@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<HotelManager.Models.Habitacion>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Explora nuestras habitaciones";
@@ -13,13 +16,27 @@
             </div>
             <h2>Explora nuestras habitaciones</h2>
         </div>
-
-        <form asp-action="Create" method="get">
-            <button type="submit" class="btn btn-primary">Insertar Nueva Habitación</button>
-        </form>
+        <div>
+            @{
+                var user = await UserManager.GetUserAsync(User);
+                if (!User.IsInRole("Cliente"))
+                {
+                    <form asp-action="Create" method="get">
+                        <button type="submit" class="btn btn-primary">Insertar Nueva Habitación</button>
+                    </form>
+                }
+            }
+        </div>
         <hr>
+        <div>
+            <button id="btnOrdenar" class="btn btn-primary">Ordenar por mas baratos</button>
+            <button id="btnDisponibles" class="btn btn-success">Mostrar Solo Disponibles</button>
+            <button id="btnMostrarTodas" class="btn btn-secondary" disabled>Mostrar Todas</button>
+        </div>
+         <hr>
 
-        <div class="row">
+        <div class="row" id="cardsContainer">
+            <!-- Agregamos el identificador cardsContainer aquí -->
             @foreach (var item in Model)
             {
                 <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
@@ -27,41 +44,47 @@
                         <div class="card-explore__img">
                             @if (item.TipoHabitacion.Descripcion == "Habitacion Sencilla")
                             {
-                                <img class="card-img" src="img/home/explore1.png" alt="">
+                                <img class="card-img" src="~/img/home/explore1.png" alt="">
                             }
                             else if (item.TipoHabitacion.Descripcion == "Habitacion Doble")
                             {
-                                <img class="card-img" src="img/home/explore3.png" alt="">
+                                <img class="card-img" src="~/img/home/explore3.png" alt="">
                             }
                             else if (item.TipoHabitacion.Descripcion == "Suite Familiar")
                             {
-                                <img class="card-img" src="img/home/explore6.png" alt="">
+                                <img class="card-img" src="~/img/home/explore6.png" alt="">
                             }
                             else
                             {
                                 <!-- Puedes asignar una imagen predeterminada o manejar otros casos aquí -->
-                                <img class="card-img" src="img/home/default.png" alt="">
+                                <img class="card-img" src="i~/mg/home/default.png" alt="">
                             }
                         </div>
                         <div class="card-body">
                             <h4 class="card-explore__price">L.@(item.Tarifa) <sub>/ Por noche</sub></h4>
                             <h4 class="card-explore__title"><a>@(item.TipoHabitacion.Descripcion)</a></h4>
                             <h3 class="card-explore__title">Habitación N.@(item.Numero)</h3>
-                            
+
                             <p>@(item.TipoHabitacion.DescripcionLarga)</p>
                             @if (item.Disponibilidad)
                             {
-                                <a class="card-explore__link btn btn-primary" href="@Url.Action("Reservar", new { id = item.IDHabitacion })">Reservar ahora <i class="ti-arrow-right"></i></a>
+                                <a class="card-explore__link btn" href="@Url.Action("Reservar", new { id = item.IDHabitacion })">Reservar ahora <i class="ti-arrow-right"></i></a>
                             }
                             else
                             {
-                                <button class="card-explore__link btn btn-secondary" disabled>Reservar ahora</button>
+                                <button class="card-explore__link btn btn-secondary" disabled>No Disponible</button>
                             }
                             <hr>
-                            <a asp-action="Edit" asp-route-id="@item.IDHabitacion "class="btn btn-warning">Edit</a> 
-                            <a asp-action="Details" asp-route-id="@item.IDHabitacion" class="btn btn-info">Details</a> 
-                            <a asp-action="Delete" asp-route-id="@item.IDHabitacion" class="btn btn-danger">Delete</a>
-                
+                            @{
+                                 
+                                if (!User.IsInRole("Cliente"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.IDHabitacion " class="btn btn-warning">Edit</a>
+                                    
+                                    <a asp-action="Delete" asp-route-id="@item.IDHabitacion" class="btn btn-danger">Delete</a>
+                                }
+                            }
+                            
                         </div>
                     </div>
                 </div>
@@ -69,3 +92,131 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('btnOrdenar').addEventListener('click', function () {
+                var cardsContainer = document.getElementById('cardsContainer');
+                var cards = Array.from(cardsContainer.getElementsByClassName('col-md-6'));
+
+                cards.sort(function (a, b) {
+                    var priceA = parseFloat(a.querySelector('.card-explore__price').innerText.replace('L.', ''));
+                    var priceB = parseFloat(b.querySelector('.card-explore__price').innerText.replace('L.', ''));
+
+                    return priceA - priceB;
+                });
+
+                cards.forEach(function (card) {
+                    cardsContainer.appendChild(card);
+                });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var allCards = Array.from(document.getElementsByClassName('col-md-6'));
+            var btnOrdenar = document.getElementById('btnOrdenar');
+            var btnDisponibles = document.getElementById('btnDisponibles');
+
+            btnOrdenar.addEventListener('click', function () {
+                ordenarPorTarifa();
+            });
+
+            btnDisponibles.addEventListener('click', function () {
+                mostrarDisponibles();
+            });
+
+            function ordenarPorTarifa() {
+                var cardsContainer = document.getElementById('cardsContainer');
+                var cards = Array.from(cardsContainer.getElementsByClassName('col-md-6'));
+
+                cards.sort(function (a, b) {
+                    var priceA = parseFloat(a.querySelector('.card-explore__price').innerText.replace('L.', ''));
+                    var priceB = parseFloat(b.querySelector('.card-explore__price').innerText.replace('L.', ''));
+
+                    return priceA - priceB;
+                });
+
+                cards.forEach(function (card) {
+                    cardsContainer.appendChild(card);
+                });
+            }
+
+            function mostrarDisponibles() {
+                allCards.forEach(function (card) {
+                    var isAvailable = card.querySelector('.btn').hasAttribute('href');
+                    card.style.display = isAvailable ? 'block' : 'none';
+                });
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var allCards = Array.from(document.getElementsByClassName('col-md-6'));
+            var btnOrdenar = document.getElementById('btnOrdenar');
+            var btnDisponibles = document.getElementById('btnDisponibles');
+            var btnMostrarTodas = document.getElementById('btnMostrarTodas');
+
+            btnOrdenar.addEventListener('click', function () {
+                ordenarPorTarifa();
+            });
+
+            btnDisponibles.addEventListener('click', function () {
+                mostrarDisponibles();
+            });
+
+            btnMostrarTodas.addEventListener('click', function () {
+                mostrarTodas();
+            });
+
+            function ordenarPorTarifa() {
+                var cardsContainer = document.getElementById('cardsContainer');
+                var cards = Array.from(cardsContainer.getElementsByClassName('col-md-6'));
+
+                cards.sort(function (a, b) {
+                    var priceA = parseFloat(a.querySelector('.card-explore__price').innerText.replace('L.', ''));
+                    var priceB = parseFloat(b.querySelector('.card-explore__price').innerText.replace('L.', ''));
+
+                    return priceA - priceB;
+                });
+
+                cards.forEach(function (card) {
+                    cardsContainer.appendChild(card);
+                });
+            }
+
+            function mostrarDisponibles() {
+                allCards.forEach(function (card) {
+                    var isAvailable = card.querySelector('.btn').hasAttribute('href');
+                    card.style.display = isAvailable ? 'block' : 'none';
+                });
+                actualizarBotones();
+            }
+
+            function mostrarTodas() {
+                allCards.forEach(function (card) {
+                    card.style.display = 'block';
+                });
+                actualizarBotones();
+            }
+
+            function actualizarBotones() {
+                var todasVisible = allCards.every(function (card) {
+                    return card.style.display === 'block';
+                });
+
+                btnMostrarTodas.disabled = todasVisible;
+                btnDisponibles.disabled = !todasVisible;
+            }
+        });
+    </script>
+}
+
+
+
+
+
+
+

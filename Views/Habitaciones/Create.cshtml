@@ -1,56 +1,54 @@
 ﻿@model HotelManager.Models.Habitacion
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Habitacion";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mt-5 pt-5">
+            <h1 class="text-center">@ViewData["Title"]</h1>
 
-<h4>Habitacion</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Numero" class="control-label"></label>
-                <input asp-for="Numero" class="form-control" />
-                <span asp-validation-for="Numero" class="text-danger"></span>
-            </div>
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+                <div class="form-group">
+                    <label asp-for="Numero" class="control-label">Número</label>
+                    <input asp-for="Numero" class="form-control" />
+                    <span asp-validation-for="Numero" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="IDTipoHabitacion" class="control-label"></label>
-                <select asp-for="IDTipoHabitacion" class="form-control" asp-items="ViewBag.IDTipoHabitacion"></select>
-            </div>
-            <div class="form-group">
-                <!-- Campo oculto para almacenar el IDTipoHabitacion seleccionado -->
-                <input type="hidden" asp-for="IDTipoHabitacion" id="hiddenTipoHabitacion" />
-                <input type="submit" value="Create" class="btn btn-primary" onclick="setHiddenField();" />
-            </div>
+                <div class="form-group">
+                    <label asp-for="IDTipoHabitacion" class="control-label">Tipo de Habitación</label>
+                    <select asp-for="IDTipoHabitacion" class="form-control" asp-items="ViewBag.IDTipoHabitacion"></select>
+                    <!-- Campo oculto para almacenar el IDTipoHabitacion seleccionado -->
+                    <input type="hidden" asp-for="IDTipoHabitacion" id="hiddenTipoHabitacion" />
+                </div>
 
+                <div class="form-group">
+                    <label asp-for="Tarifa" class="control-label">Tarifa</label>
+                    <input asp-for="Tarifa" class="form-control" />
+                    <span asp-validation-for="Tarifa" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="Tarifa" class="control-label"></label>
-                <input asp-for="Tarifa" class="form-control" />
-                <span asp-validation-for="Tarifa" class="text-danger"></span>
+                <div class="form-group form-check">
+                    <input class="form-check-input" asp-for="Disponibilidad" />
+                    <label class="form-check-label" for="Disponibilidad">@Html.DisplayNameFor(model => model.Disponibilidad)</label>
+                </div>
+
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary">Crear</button>
+                </div>
+            </form>
+
+            <div class="text-center">
+                <a asp-action="Index">Volver a la lista</a>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Disponibilidad" /> @Html.DisplayNameFor(model => model.Disponibilidad)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
