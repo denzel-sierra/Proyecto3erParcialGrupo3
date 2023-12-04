@@ -1,70 +1,71 @@
 ﻿@model IEnumerable<HotelManager.Models.Habitacion>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Explora nuestras habitaciones";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<section class="section-margin">
+    <div class="container">
+        <div class="section-intro text-center pb-80px">
+            <div class="section-intro__style">
+                <img src="img/home/bed-icon.png" alt="">
+            </div>
+            <h2>Explora nuestras habitaciones</h2>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Numero)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tarifa)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Disponibilidad)
-            </th>
-            <th>
-                Tipo de Habitacion
-            </th>
-            <th>Acciones</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Numero)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tarifa)
-            </td>
-                <td>
-                    @if (item.Disponibilidad)
-                    {
-                        <span class="text-success">Disponible</span>
-                    }
-                    else
-                    {
-                        <span class="text-danger">No Disponible</span>
-                    }
-                </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.TipoHabitacion.Descripcion)
-            </td>
-            <td>
-                    <a asp-action="Edit" asp-route-id="@item.IDHabitacion" class="btn btn-warning">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.IDHabitacion" class="btn btn-info">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.IDHabitacion" class="btn btn-danger">Delete</a>
-                    @if (item.Disponibilidad)
-                    {
-                        <a asp-action="Reservar" asp-route-id="@item.IDHabitacion" class="btn btn-primary">Reservar</a>
-                    }
-                    else
-                    {
-                        <button class="btn btn-secondary" disabled>Reservar</button>
-                    }
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <form asp-action="Create" method="get">
+            <button type="submit" class="btn btn-primary">Insertar Nueva Habitación</button>
+        </form>
+        <hr>
+
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
+                    <div class="card card-explore">
+                        <div class="card-explore__img">
+                            @if (item.TipoHabitacion.Descripcion == "Habitacion Sencilla")
+                            {
+                                <img class="card-img" src="img/home/explore1.png" alt="">
+                            }
+                            else if (item.TipoHabitacion.Descripcion == "Habitacion Doble")
+                            {
+                                <img class="card-img" src="img/home/explore3.png" alt="">
+                            }
+                            else if (item.TipoHabitacion.Descripcion == "Suite Familiar")
+                            {
+                                <img class="card-img" src="img/home/explore6.png" alt="">
+                            }
+                            else
+                            {
+                                <!-- Puedes asignar una imagen predeterminada o manejar otros casos aquí -->
+                                <img class="card-img" src="img/home/default.png" alt="">
+                            }
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-explore__price">L.@(item.Tarifa) <sub>/ Por noche</sub></h4>
+                            <h4 class="card-explore__title"><a>@(item.TipoHabitacion.Descripcion)</a></h4>
+                            <h3 class="card-explore__title">Habitación N.</h3><h2>@(item.Numero)</h2>
+                            
+                            <p>@(item.TipoHabitacion.DescripcionLarga)</p>
+                            @if (item.Disponibilidad)
+                            {
+                                <a class="card-explore__link btn btn-primary" href="@Url.Action("Reservar", new { id = item.IDHabitacion })">Reservar ahora <i class="ti-arrow-right"></i></a>
+                            }
+                            else
+                            {
+                                <button class="card-explore__link btn btn-secondary" disabled>Reservar ahora</button>
+                            }
+                            <hr>
+                            <a asp-action="Edit" asp-route-id="@item.IDHabitacion "class="btn btn-warning">Edit</a> 
+                            <a asp-action="Details" asp-route-id="@item.IDHabitacion" class="btn btn-info">Details</a> 
+                            <a asp-action="Delete" asp-route-id="@item.IDHabitacion" class="btn btn-danger">Delete</a>
+                
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

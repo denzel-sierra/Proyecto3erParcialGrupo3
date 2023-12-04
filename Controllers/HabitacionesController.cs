@@ -182,7 +182,7 @@ namespace HotelManager.Controllers
             // Aquí puedes implementar la lógica de reserva según tus requisitos.
             // Puedes pasar el objeto habitacion o cualquier información adicional a la vista Reservar.cshtml.
 
-            return RedirectToAction("Create", "Reservas");
+            return RedirectToAction("Create", "Reservas", new { idHabitacion = id });
         }
     }
 }
