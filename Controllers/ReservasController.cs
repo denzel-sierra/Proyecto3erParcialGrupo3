@@ -62,30 +62,22 @@ namespace HotelManager.Controllers
             //ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario");
             //ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion");
             ViewData["IDHabitacion"] = idHabitacion;
+            ViewData["Descripcion"] = new SelectList(_context.TipoHabitacion, "Descripcion", "Descripcion");
             return View();
         }
 
-        // POST: Reservas/Create
-        // Procesa la creación de una nueva reserva, con validación del modelo y redirección a la lista de reservas
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IDReserva,IDUsuario,IDHabitacion,IDFactura,FechaCheckin,FechaCheckOut,EstadoReserva")] Reserva reserva)
-        {
-
-            // Asignar un nuevo GUID como ID de la reserva
-            reserva.IDReserva = Guid.NewGuid();
-            reserva.EstadoReserva = "Vigente";
-            // Agregar la reserva al contexto y guardar los cambios
-            _context.Add(reserva);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-
-            // Recargar listas desplegables en caso de error
-            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", reserva.IDUsuario);
-            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario", reserva.IDFactura);
-            ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion", reserva.IDHabitacion);
-            return View(reserva);
-        }
+            // POST: Reservas/Create
+            // Procesa la creación de una nueva reserva, con validación del modelo y redirección a la lista de reservas
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> Create([Bind("IDReserva,IDUsuario,IDHabitacion,IDFactura,FechaCheckin,FechaCheckOut,EstadoReserva")] Reserva reserva)
+            {
+                reserva.IDReserva = Guid.NewGuid();
+                reserva.EstadoReserva = "Vigente";
+                _context.Add(reserva);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
 
         // GET: Reservas/Edit/5
         // Muestra el formulario para editar una reserva existente con listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
@@ -216,19 +208,6 @@ namespace HotelManager.Controllers
             return (_context.Reserva?.Any(e => e.IDReserva == id)).GetValueOrDefault();
         }
 
-        // Obtener la tarifa de la habitación seleccionada
-        [HttpGet]
-        public IActionResult GetTarifa(Guid id)
-        {
-            var habitacion = _context.Habitacion.Find(id);
-            if (habitacion != null)
-            {
-                return Json(habitacion.Tarifa);
-            }
-
-            return Json(null);
-        }
-
         // Buscar usuarios
         public IActionResult SearchUsers(string numeroIdentidad, string nombre, string telefono, string direccion, string userName)
         {
@@ -245,5 +224,31 @@ namespace HotelManager.Controllers
             return Json(users);
         }
 
+        public IActionResult SearchRooms(string numeroHabitacion, string tipoHabitacion, decimal? tarifa)
+        {
+            var habitaciones = _context.Habitacion
+                .Where(h =>
+                    (string.IsNullOrEmpty(numeroHabitacion) || h.Numero.ToString().Contains(numeroHabitacion)) &&
+                    (string.IsNullOrEmpty(tipoHabitacion) || h.TipoHabitacion.Descripcion.Contains(tipoHabitacion)) &&
+                    (!tarifa.HasValue || h.Tarifa == tarifa.Value))
+                .Select(h => new { h.IDHabitacion, h.Numero, h.IDTipoHabitacion, TipoHabitacion = h.TipoHabitacion.Descripcion, h.Tarifa })
+                .ToList();
+
+            return Json(habitaciones);
+        }
+
+        [HttpGet]
+        public IActionResult GetRoomRate(Guid idHabitacion)
+        {
+            var habitacion = _context.Habitacion.Find(idHabitacion);
+
+            if (habitacion != null)
+            {
+                var tarifa = habitacion.Tarifa;
+                return Json(tarifa);
+            }
+
+            return Json(null); // O manejar de otra manera si la habitación no se encuentra
+        }
     }
 }

@@ -1,31 +1,51 @@
-﻿@model HotelManager.Models.Reserva
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@model HotelManager.Models.Reserva
 
 @{
     ViewData["Title"] = "Reservar";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var userId = UserManager.GetUserId(User);
 }
 
-<hr class="mt-5" />
-<hr class="mt-5" />
-<h2 class="text-center border-bottom">Reservar para un Cliente</h2>
+@if (SignInManager.IsSignedIn(User))
+{
+    var user = await UserManager.GetUserAsync(User);
+    var displayName = user?.Nombre;
 
-<div>
-    <a asp-action="Index">Regresar a Reservas</a>
-</div>
+    if (User.IsInRole("Cliente"))
+    {
+        <h2 class="text-center border-bottom pt-5 m-5">Defina su Estadia</h2>
+    }
+    else
+    {
+        <h2 class="text-center border-bottom pt-5 m-5">Reservar para un cliente</h2>
+    }
+}
 
 <div class="container">
 
-    <div class="row m-4">
+    <form asp-action="Create" novalidate>
 
-        <div class="col-md-4 border p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <h4>Cliente</h4>
-            <form asp-action="Create" novalidate>
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row d-flex justify-content-center">
+            @if (!User.IsInRole("Cliente"))
+            {
+                <div class="col-md-4 border p-3">
+
+                <h4>Cliente</h4>
+
+                <div id="errorUsuario" class="text-danger" style="display:none;"></div>
 
                 <div class="form-group mb-4" style="display:none;">
                     <label asp-for="IDUsuario" class="control-label">ID del Cliente</label>
                     <input asp-for="IDUsuario" class="form-control" readonly />
+                </div>
+
+                <div class="alert alert-success mt-3" role="alert" id="alertaUsuarioSeleccionado" style="display: none;">
+                    Cliente Seleccionado
                 </div>
 
                 <div class="form-group">
@@ -60,38 +80,80 @@
                 <!-- Añade el botón de búsqueda -->
                 <div class="form-group mb-3">
                     <button type="button" class="btn btn-primary" id="btnBuscarUsuario">Buscar Usuario</button>
+                    <button type="button" id="btnLimpiarUsuario" class="btn btn-secondary align-self-end" style="display:none;" onclick="limpiarUsuario()">Limpiar</button>
                 </div>
 
-                </form>
 
-        </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group mb-4" style="display:none;">
+                    <label asp-for="IDUsuario" class="control-label">ID del Cliente</label>
+                    <input asp-for="IDUsuario" class="form-control" readonly value="@userId" />
+                </div>
+            }
 
-        <div class="col-md-4 border p-3">
+            @if (!User.IsInRole("Cliente"))
+            {
+                <div class="col-md-4 border p-3">
 
-            <h4>Habitación</h4>
-            <form asp-action="Create" novalidate>
+                    <h4>Habitación</h4>
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                    <!-- IDHabitacion -->
-                    <div class="form-group">
+                    <div class="alert alert-success mt-3" role="alert" id="alertaHabitacionSeleccionada" style="display: none;">
+                        Habitacion Seleccionada
+                    </div>
+
+                    <div id="errorHabitacion" class="text-danger" style="display:none;"></div>
+
+
+                    <div class="form-group" style="display:none;">
                         <label asp-for="IDHabitacion" class="control-label"></label>
-                    <input asp-for="IDHabitacion" class="form-control" onchange="updateTarifa()"></input>
+                        <input asp-for="IDHabitacion" class="form-control" onchange="updateTarifa()" readonly />
                     </div>
 
-                    <!-- TarifaHabitacion -->
                     <div class="form-group">
-                        <label for="TarifaHabitacion" class="control-label">Tarifa de la habitación</label>
-                        <input id="TarifaHabitacion" class="form-control" readonly />
+                        <label asp-for="NumeroHabitacion" class="control-label">Número de Habitación</label>
+                        <input asp-for="NumeroHabitacion" class="form-control" />
                     </div>
-                </form>
 
-        </div>
+                    <div class="form-group">
+                        <label asp-for="TipoHabitacion" class="control-label">Tipo de Habitación</label>
+                        <select asp-for="TipoHabitacion" class="form-control" asp-items="ViewBag.Descripcion"></select>
+                    </div>
 
-        <div class="col-md-4 border p-3">
+                    <div class="form-group">
+                        <label asp-for="Tarifa" class="control-label">Tarifa de la habitación</label>
+                        <input asp-for="Tarifa" id="Tarifa" class="form-control" />
+                    </div>
 
-            <h4>Estadía</h4>
-            <form asp-action="Create" novalidate>
+                    <div class="form-group mt-3 mb-3">
+                        <button type="button" class="btn btn-primary" id="btnBuscarHabitacion">Buscar Habitación</button>
+                        <button type="button" id="btnLimpiarHabitacion" class="btn btn-secondary align-self-end" style="display:none;" onclick="limpiarHabitacion()">Limpiar</button>
+
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                <div class="form-group" style="display:none;">
+                    <label asp-for="IDHabitacion" class="control-label">IDHabitacion</label>
+                    <input asp-for="IDHabitacion" class="form-control" readonly />
+                </div>
+                <div class="form-group" style="display:none;">
+                    <label asp-for="Tarifa" class="control-label">Tarifa de la habitación</label>
+                    <input asp-for="Tarifa" id="Tarifa" class="form-control" readonly />
+                </div>
+            }
+
+            <div class="col-md-4 border p-3">
+
+                <h4>Estadía</h4>
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div id="errorFechas" class="text-danger" style="display:none;"></div>
 
                 <!-- FechaCheckin -->
                 <div class="form-group mb-3">
@@ -124,17 +186,18 @@
                     <input type="submit" value="Facturar" class="btn btn-primary" />
                 </div>
 
-            </form>
+            </div>
 
         </div>
 
-    </div>
+    </form>
+
 
     <div class="row ">
 
         <div class="col-md-12 border p-4" id="resultadosBusqueda" style="display: none;">
 
-            <h4>Resultados de Búsqueda</h4>
+            <h4>Resultados de Búsqueda de Usuarios</h4>
 
             <table class="table">
 
@@ -159,6 +222,26 @@
 
     </div>
 
+    <div class="row ">
+        <div class="col-md-12 border p-4" id="resultadosBusquedaHabitaciones" style="display: none;">
+            <h4>Resultados de Búsqueda de Habitaciones</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Número Habitación</th>
+                        <th>Tipo de Habitación</th>
+                        <th>Tarifa</th>
+                        <th> </th>
+                    </tr>
+                </thead>
+                <tbody id="tablaResultadosHabitaciones">
+                    <!-- Aquí se agregarán dinámicamente las filas de resultados de habitaciones -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
 </div>
 
 
@@ -169,37 +252,29 @@
     <script>
 
         $(document).ready(function () {
+
+            var idHabitacion = $("#IDHabitacion").val();
+            obtenerTarifa(idHabitacion);
+
+
+            // Manejador de cambio de fechas
             $('#FechaCheckin, #FechaCheckOut').change(function () {
-                var checkin = new Date($('#FechaCheckin').val());
-                var checkout = new Date($('#FechaCheckOut').val());
-
-                // Validar que la fecha de check-in sea anterior a la fecha de check-out
-                if (checkin >= checkout) {
-                    alert("La fecha de check-in debe ser anterior a la fecha de check-out.");
-                    $('#FechaCheckin').val('');
-                    $('#FechaCheckOut').val('');
-                    $('#CantidadDias').val('');
-                    return;
-                }
-
-                var diffInMs = checkout - checkin;
-                var diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-                // Validar que la diferencia de días sea positiva
-                if (diffInDays < 0) {
-                    alert("La fecha de check-in debe ser anterior a la fecha de check-out.");
-                    $('#FechaCheckin').val('');
-                    $('#FechaCheckOut').val('');
-                    $('#CantidadDias').val('');
-                    return;
-                }
-
-                $('#CantidadDias').val(diffInDays);
-                calcularTotalReserva(); // Llamar a la función para actualizar el total de la reserva
+                calcularCantidadDias();
+                calcularTotalReserva();
             });
+
+            // Llamada inicial al cargar la página o seleccionar una habitación
+            calcularTotalReserva();
+
+            // Manejadores de clic fuera de la función de cambio de fechas
             $('#btnBuscarUsuario').click(function () {
                 buscarUsuario();
             });
+
+            $('#btnBuscarHabitacion').click(function () {
+                buscarHabitacion();
+            });
+
             $('#NumeroIdentidad, #Nombre, #Telefono, #Direccion').keydown(function (e) {
                 if (e.keyCode === 13) {  // Verificar si se presiona la tecla Enter
                     buscarUsuario();
@@ -208,50 +283,69 @@
             });
         });
 
-        function updateTarifa() {
-            var habitacionId = $("#IDHabitacion").val();
-
-            if (habitacionId) {
-                $.ajax({
-                    url: '@Url.Action("GetTarifa", "Reservas")',
-                    type: 'GET',
-                    data: { id: habitacionId },
-                    success: function (tarifa) {
-                        // Formatear el valor como moneda con símbolo L
-                        var formattedTarifa = parseFloat(tarifa).toLocaleString('es-US', {
-                            style: 'currency',
-                            currency: 'HNL', // Cambia a la moneda local correspondiente
-                            minimumFractionDigits: 2
-                        });
-
-                        $("#TarifaHabitacion").val(formattedTarifa);
-
-                        // Calcular el total de la reserva
-                        var cantidadDias = parseFloat($("#CantidadDias").val());
-                        if (!isNaN(cantidadDias)) {
-                            var totalReserva = parseFloat(tarifa) * cantidadDias;
-
-                            // Formatear el total como moneda con símbolo L
-                            var formattedTotal = totalReserva.toLocaleString('es-US', {
-                                style: 'currency',
-                                currency: 'HNL', // Cambia a la moneda local correspondiente
-                                minimumFractionDigits: 2
-                            });
-
-                            $("#TotalReserva").val(formattedTotal);
-                        } else {
-                            $("#TotalReserva").val('');
-                        }
-                    },
-                    error: function () {
-                        console.log("Error al obtener la tarifa de la habitación");
-                        $("#TarifaHabitacion").val('');
-                        $("#TotalReserva").val('');
+        function obtenerTarifa(idHabitacion) {
+            $.ajax({
+                url: '@Url.Action("GetRoomRate", "Reservas")',
+                type: 'GET',
+                data: { idHabitacion: idHabitacion },
+                success: function (tarifa) {
+                    // Verificar si se obtuvo una tarifa válida
+                    if (tarifa != null) {
+                        // Actualizar el campo Tarifa con la tarifa obtenida
+                        $('#Tarifa').val(tarifa);
+                    } else {
+                        // Manejar de otra manera si la tarifa no se obtuvo
+                        console.log('No se pudo obtener la tarifa.');
                     }
-                });
+                },
+                error: function () {
+                    // Manejar errores de la llamada AJAX
+                    console.log('Error al obtener la tarifa.');
+                }
+            });
+        }
+
+        function calcularCantidadDias() {
+            var fechaCheckin = new Date($('#FechaCheckin').val());
+            var fechaCheckOut = new Date($('#FechaCheckOut').val());
+
+            // Verificar si ambas fechas son válidas
+            if (!isNaN(fechaCheckin) && !isNaN(fechaCheckOut)) {
+                var diferenciaTiempo = fechaCheckOut - fechaCheckin;
+                var diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
+
+                // Actualizar el campo de cantidad de días
+                $('#CantidadDias').val(diferenciaDias);
+
+                // Ocultar el mensaje de error de fechas
+                $('#errorFechas').hide();
             } else {
-                $("#TarifaHabitacion").val('');
-                $("#TotalReserva").val('');
+                // Mostrar un mensaje de error si las fechas no son válidas
+                $('#CantidadDias').val('');
+                $('#errorFechas').text('Seleccione fechas válidas').show();
+            }
+        }
+
+        function calcularTotalReserva() {
+            var tarifa = parseFloat($('#Tarifa').val());
+            var cantidadDias = parseInt($('#CantidadDias').val());
+
+            // Verificar si la tarifa y la cantidad de días son valores válidos
+            if (!isNaN(tarifa) && !isNaN(cantidadDias)) {
+                var totalReserva = tarifa * cantidadDias;
+
+                // Formatear el total como moneda con símbolo L
+                var formattedTotal = totalReserva.toLocaleString('es-US', {
+                    style: 'currency',
+                    currency: 'HNL', // Cambia a la moneda local correspondiente
+                    minimumFractionDigits: 2
+                });
+
+                // Actualizar el campo de total de la reserva
+                $('#TotalReserva').val(formattedTotal);
+            } else {
+                // Limpiar el campo de total de la reserva si los valores no son válidos
+                $('#TotalReserva').val('');
             }
         }
 
@@ -303,23 +397,138 @@
                     } else {
                         // Ocultar la tabla de resultados si no se encontraron usuarios
                         $("#resultadosBusqueda").hide();
-                        alert("Usuario no encontrado");
+                        $('#errorUsuario').text('Usuario no encontrado').show();
                     }
                 },  
                 error: function (xhr, textStatus, errorThrown) {
                     console.log("Error al buscar usuario");
                 }
             });
+
+            $("html, body").animate({
+                scrollTop: $(document).height()
+            }, 250);
+            $('#errorUsuario').text('Usuario no encontrado').hide();
+
         }
 
         function seleccionarUsuario(id, numeroIdentidad, nombre, telefono, direccion, userName) {
-            $("#IDUsuario").val(id);
-            $("#NumeroIdentidad").val(decodeURIComponent(numeroIdentidad));
-            $("#Nombre").val(decodeURIComponent(nombre));
-            $("#Telefono").val(decodeURIComponent(telefono));
-            $("#Direccion").val(decodeURIComponent(direccion));
-            $("#CorreoElectronico").val(decodeURIComponent(userName));
+            $("#IDUsuario").val(id).prop('readonly', true).addClass('is-valid');
+            $("#NumeroIdentidad").val(decodeURIComponent(numeroIdentidad)).prop('readonly', true).addClass('is-valid');
+            $("#Nombre").val(decodeURIComponent(nombre)).prop('readonly', true).addClass('is-valid');
+            $("#Telefono").val(decodeURIComponent(telefono)).prop('readonly', true).addClass('is-valid');
+            $("#Direccion").val(decodeURIComponent(direccion)).prop('readonly', true).addClass('is-valid');
+            $("#CorreoElectronico").val(decodeURIComponent(userName)).prop('readonly', true).addClass('is-valid');
+            $("#alertaUsuarioSeleccionado").fadeIn(500);
             $("#resultadosBusqueda").hide();
+            $("#btnLimpiarUsuario").show();
+        }
+
+        function limpiarUsuario() {
+            // Quitar la clase is-valid y establecer los campos como editables
+            $("#IDUsuario, #NumeroIdentidad, #Nombre, #Telefono, #Direccion, #CorreoElectronico")
+                .removeClass('is-valid')
+                .prop('readonly', false)
+                .val('');
+
+            // Ocultar el botón de limpiar
+            $("#btnLimpiarUsuario, #alertaUsuarioSeleccionado").hide();
+        }
+
+        function buscarHabitacion() {
+            // Obtener valores de los campos de búsqueda de habitaciones
+            var numeroHabitacion = $("#NumeroHabitacion").val();
+            var tipoHabitacion = $("#TipoHabitacion").val();
+            var tarifa = $("#Tarifa").val();  // Agregamos la tarifa al objeto de búsqueda
+
+            // Realizar la búsqueda de habitaciones
+            $.ajax({
+                url: '@Url.Action("SearchRooms", "Reservas")',
+                type: 'GET',
+                data: {
+                    numeroHabitacion: numeroHabitacion,
+                    tipoHabitacion: tipoHabitacion,
+                    tarifa: tarifa  // Pasamos la tarifa como parámetro
+                },
+                success: function (habitaciones) {
+                    // Limpiar resultados anteriores de habitaciones
+                    $("#tablaResultadosHabitaciones").empty();
+
+                    // Procesar y mostrar los resultados de habitaciones
+                    if (habitaciones.length > 0) {
+                        // Mostrar la tabla de resultados de habitaciones
+                        $("#resultadosBusquedaHabitaciones").show();
+
+                        // Iterar sobre las habitaciones y agregar filas a la tabla
+                        for (var i = 0; i < habitaciones.length; i++) {
+                            var habitacion = habitaciones[i];
+
+                            // Construir la fila de la tabla
+                            var fila = `<tr>
+                                            <td>${habitacion.numero}</td>
+                                            <td>${habitacion.tipoHabitacion}</td>
+                                            <td>${habitacion.tarifa}</td>
+                                            <td>
+                                                <button class="btn btn-primary" onclick="seleccionarHabitacion(
+                                                    '${encodeURIComponent(habitacion.idHabitacion)}',
+                                                    '${encodeURIComponent(habitacion.numero)}',
+                                                    '${encodeURIComponent(habitacion.idTipoHabitacion)}',
+                                                    '${encodeURIComponent(habitacion.tipoHabitacion)}',
+                                                    '${encodeURIComponent(habitacion.tarifa)}'
+                                                )">Seleccionar</button>
+                                            </td>
+                                        </tr>`;
+
+                            // Agregar la fila a la tabla
+                            $("#tablaResultadosHabitaciones").append(fila);
+                        }
+                    } else {
+                        // Ocultar la tabla de resultados si no se encontraron habitaciones
+                        $("#resultadosBusquedaHabitaciones").hide();
+                        $('#errorHabitacion').text('Hacitacion no encontrada').show();
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error al buscar habitación");
+                }
+            });
+            $("html, body").animate({
+                scrollTop: $(document).height()
+            }, 250);
+            $('#errorHabitacion').text('Hacitacion no encontrada').hide();
+
+        }
+
+        function seleccionarHabitacion(idHabitacion, numeroHabitacion, idTipoHabitacion, tipoHabitacion, tarifa) {
+            // Asignar los valores de la habitación seleccionada a los campos de búsqueda
+            $("#IDHabitacion").val(decodeURIComponent(idHabitacion)).prop('readonly', true).addClass('is-valid');
+            $("#NumeroHabitacion").val(decodeURIComponent(numeroHabitacion)).prop('readonly', true).addClass('is-valid');
+            $("#IDTipoHabitacion").val(decodeURIComponent(idTipoHabitacion)).prop('readonly', true).addClass('is-valid');
+            $("#TipoHabitacion").val(decodeURIComponent(tipoHabitacion)).prop('readonly', true).addClass('is-valid');
+            $("#Tarifa").val(decodeURIComponent(tarifa)).prop('readonly', true).addClass('is-valid');
+
+            // Mostrar la alerta de habitación seleccionada
+            $("#alertaHabitacionSeleccionada").fadeIn(500);
+
+            // Ocultar la tabla de resultados de habitaciones
+            $("#resultadosBusquedaHabitaciones").hide();
+
+            // Mostrar el botón de limpiar habitación
+            $("#btnLimpiarHabitacion").show();
+            calcularTotalReserva();
+        }
+
+        function limpiarHabitacion() {
+            // Quitar la clase is-valid y establecer los campos como editables
+            $("#IDHabitacion, #NumeroHabitacion, #IDTipoHabitacion, #TipoHabitacion, #Tarifa")
+                .removeClass('is-valid')
+                .prop('readonly', false)
+                .val('');
+
+            // Ocultar el botón de limpiar
+            $("#btnLimpiarHabitacion").hide();
+            $("#alertaHabitacionSeleccionada").hide();
+
         }
 
     </script>
