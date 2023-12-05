@@ -24,7 +24,8 @@ namespace HotelManager.Controllers
         // Muestra la lista de reservas con detalles de ApplicationUser, EncabezadoFactura y Habitacion
         public async Task<IActionResult> Index()
         {
-            return View();
+            var applicationDbContext = _context.ServicioHotel.Include(r => r.DetalleServicioFacturas);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Producto/Details/5

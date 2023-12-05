@@ -201,19 +201,23 @@ namespace HotelManager.Controllers
 
 
         // Buscar usuarios
-        public IActionResult SearchProductos(string NombreProducto, string Descripcion, decimal PrecioUnitario, int Existencias)
+        public IActionResult SearchProductos(string NombreProducto, string Descripcion, decimal? PrecioUnitario, int? Existencias)
         {
-            // Realiza la búsqueda de usuarios por varios campos, incluyendo correo electrónico
-            var producto = _context.Producto
-                .Where(u =>
-                    (string.IsNullOrEmpty(NombreProducto) || u.NombreProducto.Contains(NombreProducto)) &&
-                    (string.IsNullOrEmpty(Descripcion) || u.Descripcion.Contains(Descripcion)) &&
-                    (string.IsNullOrEmpty(PrecioUnitario) || u.PrecioUnitario.Contains(PrecioUnitario)) &&
-                    (string.IsNullOrEmpty(Existencias) || u.Existencias.Contains(Existencias))
-                .Select(u => new { u.Id, u.NombreProducto, u.Descripcion, u.PrecioUnitario, u.Existencias })
+            // Realiza la búsqueda de productos por varios campos, incluyendo nombre, descripción, precio unitario y existencias
+            var productos = _context.Producto
+                .Where(p =>
+                    (string.IsNullOrEmpty(NombreProducto) || p.NombreProducto.Contains(NombreProducto)) &&
+                    (string.IsNullOrEmpty(Descripcion) || p.Descripcion.Contains(Descripcion)) &&
+                    (!PrecioUnitario.HasValue || p.PrecioUnitario == PrecioUnitario) &&
+                    (!Existencias.HasValue || p.Existencias == Existencias)
+                )
+                .Select(p => new { p.IDProducto, p.NombreProducto, p.Descripcion, p.PrecioUnitario, p.Existencias })
                 .ToList();
-            return Json(producto);
+
+            return Json(productos);
         }
+
 
     }
 }
+

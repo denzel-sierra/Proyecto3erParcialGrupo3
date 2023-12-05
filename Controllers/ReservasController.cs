@@ -135,7 +135,7 @@ namespace HotelManager.Controllers
                 }
 
             // Redirección a la lista de reservas
-            return RedirectToAction(nameof(Index));
+          
             }
 
             // Recargar listas desplegables en caso de error
