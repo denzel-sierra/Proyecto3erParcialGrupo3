@@ -10,12 +10,12 @@ using HotelManager.Models;
 
 namespace HotelManager.Controllers
 {
-    public class ReservasController : Controller
+    public class ServicioHotelController : Controller
     {
         private readonly ApplicationDbContext _context;
 
         // Constructor del controlador que recibe una instancia de ApplicationDbContext
-        public ReservasController(ApplicationDbContext context)
+        public ServicioHotelController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -24,59 +24,58 @@ namespace HotelManager.Controllers
         // Muestra la lista de reservas con detalles de ApplicationUser, EncabezadoFactura y Habitacion
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reserva.Include(r => r.ApplicationUser).Include(r => r.EncabezadoFactura).Include(r => r.Habitacion);
+            var applicationDbContext = _context.ServicioHotel.Include(r => r.DetalleServicioFacturas);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Reservas/Details/5
+        // GET: Producto/Details/5
         // Muestra los detalles de una reserva específica con detalles de ApplicationUser, EncabezadoFactura y Habitacion
         public async Task<IActionResult> Details(Guid? id)
         {
             // Validación de parámetros
-            if (id == null || _context.Reserva == null)
+            if (id == null || _context.ServicioHotel == null)
             {
                 return NotFound();
             }
 
             // Obtener la reserva con detalles de ApplicationUser, EncabezadoFactura y Habitacion
-            var reserva = await _context.Reserva
-                .Include(r => r.ApplicationUser)
-                .Include(r => r.EncabezadoFactura)
-                .Include(r => r.Habitacion)
-                .FirstOrDefaultAsync(m => m.IDReserva == id);
+            var servicioHotel = await _context.ServicioHotel
+
+                .FirstOrDefaultAsync(m => m.IDServicio == id);
 
             // Validación de existencia de la reserva
-            if (reserva == null)
+            if (servicioHotel == null)
             {
                 return NotFound();
             }
 
-            return View(reserva);
+            return View(servicioHotel);
         }
 
-        // GET: Reservas/Create
+        // GET: producto/Create
         // Muestra el formulario para crear una nueva reserva con listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
-        public IActionResult Create(Guid? idHabitacion)
+        public IActionResult Create()
         {
             //ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id");
-            //ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario");
-            //ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion");
-            ViewData["IDHabitacion"] = idHabitacion;
-            ViewData["Descripcion"] = new SelectList(_context.TipoHabitacion, "Descripcion", "Descripcion");
             return View();
         }
 
-        // POST: Reservas/Create
+        // POST: Producto/Create
         // Procesa la creación de una nueva reserva, con validación del modelo y redirección a la lista de reservas
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IDReserva,IDUsuario,IDHabitacion,IDFactura,FechaCheckin,FechaCheckOut,EstadoReserva")] Reserva reserva)
+        public async Task<IActionResult> Create([Bind("IDServicio,NombreServicio,Descripcion,Duracion,Tarifa")] ServicioHotel servicioHotel)
         {
-            reserva.IDReserva = Guid.NewGuid();
-            reserva.EstadoReserva = "Vigente";
-            _context.Add(reserva);
+
+            // Asignar un nuevo GUID como ID de la reserva
+            servicioHotel.IDServicio = Guid.NewGuid();
+            // Agregar la reserva al contexto y guardar los cambios
+            _context.Add(servicioHotel);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Create", "EncabezadoFacturas");
+            return RedirectToAction(nameof(Index));
+
+            // Recargar listas desplegables en caso de error
+            return View(servicioHotel);
         }
 
         // GET: Reservas/Edit/5
@@ -84,48 +83,44 @@ namespace HotelManager.Controllers
         public async Task<IActionResult> Edit(Guid? id)
         {
             // Validación de parámetros
-            if (id == null || _context.Reserva == null)
+            if (id == null || _context.ServicioHotel == null)
             {
                 return NotFound();
             }
 
             // Obtener la reserva a editar
-            var reserva = await _context.Reserva.FindAsync(id);
+            var servicioHotel = await _context.ServicioHotel.FindAsync(id);
 
             // Validación de existencia de la reserva
-            if (reserva == null)
+            if (servicioHotel == null)
             {
                 return NotFound();
             }
 
-            // Cargar listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
-            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", reserva.IDUsuario);
-            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario", reserva.IDFactura);
-            ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion", reserva.IDHabitacion);
-            return View(reserva);
+            return View(servicioHotel);
         }
 
         // POST: Reservas/Edit/5
         // Procesa la edición de una reserva existente, con validación del modelo y redirección a la lista de reservas
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("IDReserva,IDUsuario,IDHabitacion,IDFactura,FechaCheckin,FechaCheckOut,EstadoReserva")] Reserva reserva)
+        public async Task<IActionResult> Edit(Guid id, [Bind("IDServicio,NombreServicio,Descripcion,Duracion,Tarifa")] ServicioHotel servicioHotel)
         {
             // Validación de igualdad de IDs
-            if (id != reserva.IDReserva)
+            if (id != servicioHotel.IDServicio)
             {
                 return NotFound();
             }
             try
             {
                 // Actualizar la reserva en el contexto y guardar los cambios
-                _context.Update(reserva);
+                _context.Update(servicioHotel);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
                 // Manejo de excepciones de concurrencia
-                if (!ReservaExists(reserva.IDReserva))
+                if (!ReservaExists(servicioHotel.IDServicio))
                 {
                     return NotFound();
                 }
@@ -134,15 +129,12 @@ namespace HotelManager.Controllers
                     throw;
                 }
 
-            // Redirección a la lista de reservas
-          
+                // Redirección a la lista de reservas
+                return RedirectToAction(nameof(Index));
             }
 
-            // Recargar listas desplegables en caso de error
-            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", reserva.IDUsuario);
-            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario", reserva.IDFactura);
-            ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion", reserva.IDHabitacion);
-            return View(reserva);
+
+            return View(servicioHotel);
         }
 
         // GET: Reservas/Delete/5
@@ -150,26 +142,24 @@ namespace HotelManager.Controllers
         public async Task<IActionResult> Delete(Guid? id)
         {
             // Validación de parámetros
-            if (id == null || _context.Reserva == null)
+            if (id == null || _context.ServicioHotel == null)
             {
                 return NotFound();
             }
 
             // Obtener la reserva a eliminar con detalles de ApplicationUser, EncabezadoFactura y Habitacion
-            var reserva = await _context.Reserva
-                .Include(r => r.ApplicationUser)
-                .Include(r => r.EncabezadoFactura)
-                .Include(r => r.Habitacion)
-                .FirstOrDefaultAsync(m => m.IDReserva == id);
+            var servicioHotel = await _context.ServicioHotel
+
+                .FirstOrDefaultAsync(m => m.IDServicio == id);
 
             // Validación de existencia de la reserva
-            if (reserva == null)
+            if (servicioHotel == null)
             {
                 return NotFound();
             }
 
             // Mostrar la página de confirmación de eliminación
-            return View(reserva);
+            return View(servicioHotel);
         }
 
         // POST: Reservas/Delete/5
@@ -179,19 +169,19 @@ namespace HotelManager.Controllers
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             // Validación de existencia del conjunto de entidades
-            if (_context.Reserva == null)
+            if (_context.ServicioHotel == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Reserva' is null.");
+                return Problem("Entity set 'ApplicationDbContext.ServicioHotel' is null.");
             }
 
             // Buscar la reserva por ID
-            var reserva = await _context.Reserva.FindAsync(id);
+            var servicioHotel = await _context.ServicioHotel.FindAsync(id);
 
             // Validar la existencia de la reserva antes de intentar eliminarla
-            if (reserva != null)
+            if (servicioHotel != null)
             {
                 // Eliminar la reserva del contexto
-                _context.Reserva.Remove(reserva);
+                _context.ServicioHotel.Remove(servicioHotel);
             }
 
             // Guardar los cambios en la base de datos
@@ -205,8 +195,11 @@ namespace HotelManager.Controllers
         private bool ReservaExists(Guid id)
         {
             // Verificar la existencia de una reserva con el ID proporcionado
-            return (_context.Reserva?.Any(e => e.IDReserva == id)).GetValueOrDefault();
+            return (_context.ServicioHotel?.Any(e => e.IDServicio == id)).GetValueOrDefault();
         }
+
+        // Obtener la tarifa de la habitación seleccionada
+
 
         // Buscar usuarios
         public IActionResult SearchUsers(string numeroIdentidad, string nombre, string telefono, string direccion, string userName)
@@ -224,32 +217,5 @@ namespace HotelManager.Controllers
             return Json(users);
         }
 
-        public IActionResult SearchRooms(string numeroHabitacion, string tipoHabitacion, decimal? tarifa, bool disponibilidad)
-        {
-            var habitaciones = _context.Habitacion
-                .Where(h =>
-                    (string.IsNullOrEmpty(numeroHabitacion) || h.Numero.ToString().Contains(numeroHabitacion)) &&
-                    (string.IsNullOrEmpty(tipoHabitacion) || h.TipoHabitacion.Descripcion.Contains(tipoHabitacion)) &&
-                    (!tarifa.HasValue || h.Tarifa == tarifa.Value) &&
-                    (disponibilidad.Equals(false) || h.Disponibilidad.Equals(true)))
-                .Select(h => new { h.IDHabitacion, h.Numero, h.Disponibilidad, h.IDTipoHabitacion, TipoHabitacion = h.TipoHabitacion.Descripcion, h.Tarifa })
-                .ToList();
-
-            return Json(habitaciones);
-        }
-
-        [HttpGet]
-        public IActionResult GetRoomRate(Guid idHabitacion)
-        {
-            var habitacion = _context.Habitacion.Find(idHabitacion);
-
-            if (habitacion != null)
-            {
-                var tarifa = habitacion.Tarifa;
-                return Json(tarifa);
-            }
-
-            return Json(null); // O manejar de otra manera si la habitación no se encuentra
-        }
     }
 }
