@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<HotelManager.Models.Reserva>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Index";
@@ -9,11 +12,20 @@
 <h3 class="text-center">Historial de Reservas</h3>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Reservar para un cliente</a>
 </p>
+<!-- ... Código anterior ... -->
+
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ApplicationUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Habitacion)
+            </th>
+            <th></th>
             <th>
                 @Html.DisplayNameFor(model => model.FechaCheckin)
             </th>
@@ -24,44 +36,50 @@
                 @Html.DisplayNameFor(model => model.EstadoReserva)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Habitacion)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.EncabezadoFactura)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ApplicationUser)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaCheckin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaCheckOut)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstadoReserva)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Habitacion.IDHabitacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EncabezadoFactura.IDUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApplicationUser.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IDReserva">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IDReserva">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IDReserva">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApplicationUser.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Habitacion.Numero)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Habitacion.TipoHabitacion.Descripcion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaCheckin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaCheckOut)
+                </td>
+                <td>
+                    @if (item.EstadoReserva == "Vigente")
+                    {
+                        <span class="success">Vigente</span>
+                    }
+                    else
+                    {
+                        <span class="danger">Expirada</span>
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-outline-info" asp-area="" asp-controller="EncabezadoFactura" asp-action="Details" asp-route-id="@item.IDFactura">Ver</a>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.IDReserva">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.IDReserva">Details</a> 
+                    <a asp-action="Delete" asp-route-id="@item.IDReserva">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+

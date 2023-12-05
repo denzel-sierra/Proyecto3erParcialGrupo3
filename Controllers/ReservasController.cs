@@ -66,18 +66,18 @@ namespace HotelManager.Controllers
             return View();
         }
 
-            // POST: Reservas/Create
-            // Procesa la creación de una nueva reserva, con validación del modelo y redirección a la lista de reservas
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create([Bind("IDReserva,IDUsuario,IDHabitacion,IDFactura,FechaCheckin,FechaCheckOut,EstadoReserva")] Reserva reserva)
-            {
-                reserva.IDReserva = Guid.NewGuid();
-                reserva.EstadoReserva = "Vigente";
-                _context.Add(reserva);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+        // POST: Reservas/Create
+        // Procesa la creación de una nueva reserva, con validación del modelo y redirección a la lista de reservas
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("IDReserva,IDUsuario,IDHabitacion,IDFactura,FechaCheckin,FechaCheckOut,EstadoReserva")] Reserva reserva)
+        {
+            reserva.IDReserva = Guid.NewGuid();
+            reserva.EstadoReserva = "Vigente";
+            _context.Add(reserva);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Create", "EncabezadoFacturas");
+        }
 
         // GET: Reservas/Edit/5
         // Muestra el formulario para editar una reserva existente con listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
@@ -224,14 +224,15 @@ namespace HotelManager.Controllers
             return Json(users);
         }
 
-        public IActionResult SearchRooms(string numeroHabitacion, string tipoHabitacion, decimal? tarifa)
+        public IActionResult SearchRooms(string numeroHabitacion, string tipoHabitacion, decimal? tarifa, bool disponibilidad)
         {
             var habitaciones = _context.Habitacion
                 .Where(h =>
                     (string.IsNullOrEmpty(numeroHabitacion) || h.Numero.ToString().Contains(numeroHabitacion)) &&
                     (string.IsNullOrEmpty(tipoHabitacion) || h.TipoHabitacion.Descripcion.Contains(tipoHabitacion)) &&
-                    (!tarifa.HasValue || h.Tarifa == tarifa.Value))
-                .Select(h => new { h.IDHabitacion, h.Numero, h.IDTipoHabitacion, TipoHabitacion = h.TipoHabitacion.Descripcion, h.Tarifa })
+                    (!tarifa.HasValue || h.Tarifa == tarifa.Value) &&
+                    (disponibilidad.Equals(false) || h.Disponibilidad.Equals(true)))
+                .Select(h => new { h.IDHabitacion, h.Numero, h.Disponibilidad, h.IDTipoHabitacion, TipoHabitacion = h.TipoHabitacion.Descripcion, h.Tarifa })
                 .ToList();
 
             return Json(habitaciones);

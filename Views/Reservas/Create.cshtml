@@ -128,10 +128,14 @@
                         <input asp-for="Tarifa" id="Tarifa" class="form-control" />
                     </div>
 
+                    <div class="form-check">
+                        <label asp-for="Disponibilidad" class="form-check-label" for="chkSoloDisponibles">Solo Habitaciones Disponibles</label>
+                        <input asp-for="Disponibilidad" type="checkbox" class="form-check-input" id="Disponibilidad">
+                    </div>
+
                     <div class="form-group mt-3 mb-3">
                         <button type="button" class="btn btn-primary" id="btnBuscarHabitacion">Buscar Habitación</button>
                         <button type="button" id="btnLimpiarHabitacion" class="btn btn-secondary align-self-end" style="display:none;" onclick="limpiarHabitacion()">Limpiar</button>
-
                     </div>
 
                 </div>
@@ -230,6 +234,7 @@
                     <tr>
                         <th>Número Habitación</th>
                         <th>Tipo de Habitación</th>
+                        <th>Disponibilidad</th>
                         <th>Tarifa</th>
                         <th> </th>
                     </tr>
@@ -440,6 +445,8 @@
             var numeroHabitacion = $("#NumeroHabitacion").val();
             var tipoHabitacion = $("#TipoHabitacion").val();
             var tarifa = $("#Tarifa").val();  // Agregamos la tarifa al objeto de búsqueda
+            var disponibilidad = $("#Disponibilidad").is(":checked");
+            console.log(disponibilidad);
 
             // Realizar la búsqueda de habitaciones
             $.ajax({
@@ -448,9 +455,11 @@
                 data: {
                     numeroHabitacion: numeroHabitacion,
                     tipoHabitacion: tipoHabitacion,
-                    tarifa: tarifa  // Pasamos la tarifa como parámetro
+                    tarifa: tarifa,  // Pasamos la tarifa como parámetro
+                    disponibilidad: disponibilidad,
                 },
                 success: function (habitaciones) {
+                    console.log(habitaciones)
                     // Limpiar resultados anteriores de habitaciones
                     $("#tablaResultadosHabitaciones").empty();
 
@@ -464,23 +473,48 @@
                             var habitacion = habitaciones[i];
 
                             // Construir la fila de la tabla
-                            var fila = `<tr>
-                                            <td>${habitacion.numero}</td>
-                                            <td>${habitacion.tipoHabitacion}</td>
-                                            <td>${habitacion.tarifa}</td>
-                                            <td>
-                                                <button class="btn btn-primary" onclick="seleccionarHabitacion(
-                                                    '${encodeURIComponent(habitacion.idHabitacion)}',
-                                                    '${encodeURIComponent(habitacion.numero)}',
-                                                    '${encodeURIComponent(habitacion.idTipoHabitacion)}',
-                                                    '${encodeURIComponent(habitacion.tipoHabitacion)}',
-                                                    '${encodeURIComponent(habitacion.tarifa)}'
-                                                )">Seleccionar</button>
-                                            </td>
-                                        </tr>`;
+                            if (habitacion.disponibilidad) {
+                                console.log(habitacion.disponibilidad);
+                                var fila = `<tr>
+                                                    <td>${habitacion.numero}</td>
+                                                    <td>${habitacion.tipoHabitacion}</td>
+                                                    <td class="alert btn-success">Diponible</td>
+                                                    <td>${habitacion.tarifa}</td>
+                                                    <td>
+                                                        <button class="btn btn-primary" onclick="seleccionarHabitacion(
+                                                            '${encodeURIComponent(habitacion.idHabitacion)}',
+                                                            '${encodeURIComponent(habitacion.numero)}',
+                                                            '${encodeURIComponent(habitacion.idTipoHabitacion)}',
+                                                            '${encodeURIComponent(habitacion.tipoHabitacion)}',
+                                                            '${encodeURIComponent(habitacion.tarifa)}',
+                                                            '${habitacion.disponibilidad}'
+                                                        )">Seleccionar</button>
+                                                    </td>
+                                                </tr>`;
+                                // Agregar la fila a la tabla
+                                $("#tablaResultadosHabitaciones").append(fila);
+                            } else {
+                                var fila = `<tr>
+                                                    <td>${habitacion.numero}</td>
+                                                    <td>${habitacion.tipoHabitacion}</td>
+                                                    <td class="alert btn-danger">No Disponible</td>
+                                                    <td>${habitacion.tarifa}</td>
+                                                    <td>
+                                                        <button class="btn btn-primary" onclick="seleccionarHabitacion(
+                                                            '${encodeURIComponent(habitacion.idHabitacion)}',
+                                                            '${encodeURIComponent(habitacion.numero)}',
+                                                            '${encodeURIComponent(habitacion.idTipoHabitacion)}',
+                                                            '${encodeURIComponent(habitacion.tipoHabitacion)}',
+                                                            '${encodeURIComponent(habitacion.tarifa)}',
+                                                            '${habitacion.disponibilidad}'
+                                                        )">Seleccionar</button>
+                                                    </td>
+                                                </tr>`;
 
-                            // Agregar la fila a la tabla
-                            $("#tablaResultadosHabitaciones").append(fila);
+                                // Agregar la fila a la tabla
+                                $("#tablaResultadosHabitaciones").append(fila);
+                            }
+                            
                         }
                     } else {
                         // Ocultar la tabla de resultados si no se encontraron habitaciones
@@ -499,23 +533,28 @@
 
         }
 
-        function seleccionarHabitacion(idHabitacion, numeroHabitacion, idTipoHabitacion, tipoHabitacion, tarifa) {
-            // Asignar los valores de la habitación seleccionada a los campos de búsqueda
-            $("#IDHabitacion").val(decodeURIComponent(idHabitacion)).prop('readonly', true).addClass('is-valid');
-            $("#NumeroHabitacion").val(decodeURIComponent(numeroHabitacion)).prop('readonly', true).addClass('is-valid');
-            $("#IDTipoHabitacion").val(decodeURIComponent(idTipoHabitacion)).prop('readonly', true).addClass('is-valid');
-            $("#TipoHabitacion").val(decodeURIComponent(tipoHabitacion)).prop('readonly', true).addClass('is-valid');
-            $("#Tarifa").val(decodeURIComponent(tarifa)).prop('readonly', true).addClass('is-valid');
+        function seleccionarHabitacion(idHabitacion, numeroHabitacion, idTipoHabitacion, tipoHabitacion, tarifa, disponibilidad) {
+            if (disponibilidad == "true") {
+                // Asignar los valores de la habitación seleccionada a los campos de búsqueda
+                $("#IDHabitacion").val(decodeURIComponent(idHabitacion)).prop('readonly', true).addClass('is-valid');
+                $("#NumeroHabitacion").val(decodeURIComponent(numeroHabitacion)).prop('readonly', true).addClass('is-valid');
+                $("#IDTipoHabitacion").val(decodeURIComponent(idTipoHabitacion)).prop('readonly', true).addClass('is-valid');
+                $("#TipoHabitacion").val(decodeURIComponent(tipoHabitacion)).prop('readonly', true).addClass('is-valid');
+                $("#Tarifa").val(decodeURIComponent(tarifa)).prop('readonly', true).addClass('is-valid');
 
-            // Mostrar la alerta de habitación seleccionada
-            $("#alertaHabitacionSeleccionada").fadeIn(500);
+                // Mostrar la alerta de habitación seleccionada
+                $("#alertaHabitacionSeleccionada").fadeIn(500);
 
-            // Ocultar la tabla de resultados de habitaciones
-            $("#resultadosBusquedaHabitaciones").hide();
+                // Ocultar la tabla de resultados de habitaciones
+                $("#resultadosBusquedaHabitaciones").hide();
 
-            // Mostrar el botón de limpiar habitación
-            $("#btnLimpiarHabitacion").show();
-            calcularTotalReserva();
+                // Mostrar el botón de limpiar habitación
+                $("#btnLimpiarHabitacion").show();
+                $('#errorHabitacion').hide();
+                calcularTotalReserva();
+            }else{
+                $('#errorHabitacion').text('Hacitacion no esta disponible').show();
+            }
         }
 
         function limpiarHabitacion() {

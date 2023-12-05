@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelManager.Models
@@ -6,24 +7,36 @@ namespace HotelManager.Models
     public class Reserva
     {
         public Guid IDReserva { get; set; }
+
         public string IDUsuario { get; set; }
+
         public Guid IDHabitacion { get; set; }
+
         public Guid? IDFactura { get; set; }
 
+        [DisplayName("Fecha de Check-in")]
         [Required(ErrorMessage = "La fecha de check-in es obligatoria.")]
         [DataType(DataType.Date, ErrorMessage = "El campo debe ser una fecha.")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime FechaCheckin { get; set; }
 
+        [DisplayName("Fecha de Check-out")]
         [Required(ErrorMessage = "La fecha de check-out es obligatoria.")]
         [DataType(DataType.Date, ErrorMessage = "El campo debe ser una fecha.")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime FechaCheckOut { get; set; }
+
+        [DisplayName("Estado")]
         public string EstadoReserva { get; set; }
 
         // Relaciones
+        [DisplayName("Habitación")]
         public Habitacion Habitacion { get; set; }
+
+        [DisplayName("Factura")]
         public EncabezadoFactura EncabezadoFactura { get; set; }
+
+        [DisplayName("Cliente")]
         public ApplicationUser ApplicationUser { get; set; }
 
         // Campos exclusivos de las vistas
