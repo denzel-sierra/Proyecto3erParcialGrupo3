@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelManager.Data;
 using HotelManager.Models;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace HotelManager.Controllers
 {
@@ -22,9 +24,19 @@ namespace HotelManager.Controllers
 
         // GET: Reservas/Index
         // Muestra la lista de reservas con detalles de ApplicationUser, EncabezadoFactura y Habitacion
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? idUsuario)
         {
+            // Convertir el ID de usuario a Guid si no es nulo ni vacío
+            Guid? usuarioId = string.IsNullOrEmpty(idUsuario) ? (Guid?)null : Guid.Parse(idUsuario);
+
             var applicationDbContext = _context.Reserva.Include(r => r.ApplicationUser).Include(r => r.EncabezadoFactura).Include(r => r.Habitacion);
+
+            // Filtrar por ID de usuario si se proporciona
+            if (usuarioId.HasValue)
+            {
+                applicationDbContext = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<Reserva, Habitacion>)applicationDbContext.Where(r => r.IDUsuario == idUsuario);
+            }
+
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -249,7 +261,33 @@ namespace HotelManager.Controllers
                 return Json(tarifa);
             }
 
-            return Json(null); // O manejar de otra manera si la habitación no se encuentra
+            return Json(null);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerReservasPorMes(int mes, int año)
+        {
+            var fechaInicio = new DateTime(año, mes, 1);
+            var fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
+
+            var reservas = await _context.Reserva
+                .Include(r => r.ApplicationUser)
+                .Where(r => r.FechaCheckin >= fechaInicio && r.FechaCheckin <= fechaFin)
+                .Select(r => new
+                {
+                    NombreUsuario = r.ApplicationUser.Nombre,
+                    Habitacion = r.Habitacion.Numero,
+                    TipoHabitacion = r.Habitacion.TipoHabitacion.Descripcion,
+                    FechaCheckin = r.FechaCheckin,
+                    FechaCheckOut = r.FechaCheckOut,
+                    EstadoReserva = r.EstadoReserva,
+                    IDFactura = r.IDFactura
+                })
+                .ToListAsync();
+
+            return Json(reservas);
+        }
+
     }
+
 }

@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -51,11 +55,12 @@
                         {
                             if (User.IsInRole("Cliente"))
                             {
+                                var userId = UserManager.GetUserId(User);
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Habitaciones" asp-action="Index">Habitaciones</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Reservas" asp-action="Index">Mis Reservas</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Reservas" asp-action="Index" asp-route-id="@userId">Mis Reservas</a>
                                 </li>
                             }
                             else
@@ -87,11 +92,11 @@
         </main>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/main.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery-ui-dist/jquery-ui.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

@@ -39,9 +39,10 @@
 
                 <div id="errorUsuario" class="text-danger" style="display:none;"></div>
 
-                <div class="form-group mb-4" style="display:none;">
+                <div class="form-group mb-4">
                     <label asp-for="IDUsuario" class="control-label">ID del Cliente</label>
                     <input asp-for="IDUsuario" class="form-control" readonly />
+                    <span asp-validation-for="IDUsuario" class="text-danger"></span>
                 </div>
 
                 <div class="alert alert-success mt-3" role="alert" id="alertaUsuarioSeleccionado" style="display: none;">
@@ -478,7 +479,7 @@
                                 var fila = `<tr>
                                                     <td>${habitacion.numero}</td>
                                                     <td>${habitacion.tipoHabitacion}</td>
-                                                    <td class="alert btn-success">Diponible</td>
+                                                    <td class="text-success">Diponible</td>
                                                     <td>${habitacion.tarifa}</td>
                                                     <td>
                                                         <button class="btn btn-primary" onclick="seleccionarHabitacion(
@@ -497,7 +498,7 @@
                                 var fila = `<tr>
                                                     <td>${habitacion.numero}</td>
                                                     <td>${habitacion.tipoHabitacion}</td>
-                                                    <td class="alert btn-danger">No Disponible</td>
+                                                    <td class="text-danger">No Disponible</td>
                                                     <td>${habitacion.tarifa}</td>
                                                     <td>
                                                         <button class="btn btn-primary" onclick="seleccionarHabitacion(

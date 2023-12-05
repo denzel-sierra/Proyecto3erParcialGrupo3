@@ -8,7 +8,8 @@ namespace HotelManager.Models
     {
         public Guid IDReserva { get; set; }
 
-        public string IDUsuario { get; set; }
+        [Required(ErrorMessage = "Seleccione un usurio.")]
+        public string? IDUsuario { get; set; }
 
         public Guid IDHabitacion { get; set; }
 

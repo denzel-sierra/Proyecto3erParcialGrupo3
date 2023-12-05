@@ -7,16 +7,20 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<hr class="mt-5" />
-<hr class="mt-5" />
-<h3 class="text-center">Historial de Reservas</h3>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Reservar para un cliente</a>
-</p>
-<!-- ... Código anterior ... -->
+<h3 class="mt-5 pt-5">Historial de Reservas</h3>
+<hr />
 
-<table class="table">
+<div class="btn-group filter-controls">
+    @if (!User.IsInRole("Cliente"))
+    {
+        <a asp-action="Create" class="btn btn-primary">Reservar para un cliente</a>
+    }
+    <button id="btnPrevMonth">Mes Anterior</button>
+    <button id="btnNextMonth">Mes Siguiente</button>
+</div>
+
+<table class="table" id="tablaReservas">
     <thead>
         <tr>
             <th>
@@ -42,44 +46,88 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ApplicationUser.Nombre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Habitacion.Numero)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Habitacion.TipoHabitacion.Descripcion)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FechaCheckin)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FechaCheckOut)
-                </td>
-                <td>
-                    @if (item.EstadoReserva == "Vigente")
-                    {
-                        <span class="success">Vigente</span>
-                    }
-                    else
-                    {
-                        <span class="danger">Expirada</span>
-                    }
-                </td>
-                <td>
-                    <a class="btn btn-outline-info" asp-area="" asp-controller="EncabezadoFactura" asp-action="Details" asp-route-id="@item.IDFactura">Ver</a>
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.IDReserva">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.IDReserva">Details</a> 
-                    <a asp-action="Delete" asp-route-id="@item.IDReserva">Delete</a>
-                </td>
-            </tr>
-        }
+        
     </tbody>
 </table>
 
+@section Scripts 
+{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        $(document).ready(function () {
+            // Función para obtener las reservas por mes
+            function obtenerReservasPorMes(mes, año) {
+                // Obtener la URL de la acción del controlador
+                var url = '@Url.Action("ObtenerReservasPorMes", "Reservas")';
+
+                // Hacer la solicitud AJAX al controlador
+                $.ajax({
+                    url: `${url}?mes=${mes}&año=${año}`,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (reservas) {
+                        // Limpiar la tabla
+                        $('#tablaReservas tbody').empty();
+
+                        // Llenar la tabla con las reservas
+                        $.each(reservas, function (index, reserva) {
+                            $('#tablaReservas tbody').append(
+                                `<tr>
+                                     <td>${reserva.nombreUsuario}</td>
+                                     <td>${reserva.habitacion}</td>
+                                     <td>${reserva.tipoHabitacion}</td>
+                                     <td>${reserva.fechaCheckin}</td>
+                                     <td>${reserva.fechaCheckOut}</td>
+                                     <td>${reserva.estadoReserva}</td>
+                                     <td><a class="btn btn-outline-info" asp-area="" asp-controller="EncabezadoFactura" asp-action="Details" asp-route-id="${reserva.idFactura}">Ver</a></td>
+                                </tr>`
+                            );
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener las reservas: ', error);
+                    }
+                });
+            }
+
+            // Obtener la fecha y año actual
+            var fechaActual = new Date();
+            var añoActual = fechaActual.getFullYear();
+            var mesActual = fechaActual.getMonth() + 1; // Sumar 1 ya que los meses comienzan desde 0
+
+            // Inicializar la tabla con las reservas del mes actual
+            obtenerReservasPorMes(mesActual, añoActual);
+
+            // Manejar el clic en el botón "Mes Anterior"
+            $('#btnPrevMonth').click(function () {
+                // Calcular el mes anterior
+                mesActual = mesActual - 1;
+                if (mesActual === 0) {
+                    mesActual = 12;
+                    añoActual = añoActual - 1;
+                }
+
+                // Obtener y mostrar las reservas del nuevo mes
+                obtenerReservasPorMes(mesActual, añoActual);
+            });
+
+            // Manejar el clic en el botón "Mes Siguiente"
+            $('#btnNextMonth').click(function () {
+                // Calcular el mes siguiente
+                mesActual = mesActual + 1;
+                if (mesActual === 13) {
+                    mesActual = 1;
+                    añoActual = añoActual + 1;
+                }
+
+                // Obtener y mostrar las reservas del nuevo mes
+                obtenerReservasPorMes(mesActual, añoActual);
+            });
+
+        });
+    </script>
+
+
+
+}
