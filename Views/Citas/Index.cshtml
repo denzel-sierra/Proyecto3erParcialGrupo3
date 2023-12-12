@@ -1,0 +1,86 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@model IEnumerable<HotelManager.Models.Cita>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="pt-5 mt-5">Mis Citas</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Nueva Cita</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Fecha y Hora
+            </th>
+            <th>
+                Estado de la cita
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="citasTablaBody">
+        @if (!User.IsInRole("Cliente"))
+        {
+            @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FechaHoraCita)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EstadoCita)
+                    </td>
+                    <td class="btn-group">
+                        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.IDCita">Detalles</a>
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.IDCita">Borrar</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    @if (User.IsInRole("Cliente"))
+        {
+            <script>
+                $(document).ready(function () {
+                    console.log("Texto de prueba");
+                    $.ajax({
+                        url: '@Url.Action("ObtenerCitasPorUsuario", "Citas")',
+                        type: 'GET',
+                        success: function (citas) {
+                            // Limpiar la tabla
+                            $('#citasTablaBody').empty();
+
+                            // Llenar la tabla con las citas del usuario
+                            citas.forEach(function (cita) {
+                                // Obtener el nombre del empleado
+                                var nombreEmpleado = cita.applicationUser ? cita.applicationUser.nombre : '';
+
+                                // Agregar una fila a la tabla con la información de la cita
+                                $('#citasTablaBody').append(`
+                                    <tr>
+                                        <td>${cita.fechaHoraCita}</td>
+                                        <td>${cita.estadoCita}</td>
+                                    </tr>
+                                `);
+                            });
+                        },
+                        error: function (error) {
+                            console.error('Error al obtener las citas del usuario:', error);
+                        }
+                    });
+                });
+            </script>
+        }
+    }
+}

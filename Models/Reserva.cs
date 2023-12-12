@@ -13,8 +13,6 @@ namespace HotelManager.Models
 
         public Guid IDHabitacion { get; set; }
 
-        public Guid? IDFactura { get; set; }
-
         [DisplayName("Fecha de Check-in")]
         [Required(ErrorMessage = "La fecha de check-in es obligatoria.")]
         [DataType(DataType.Date, ErrorMessage = "El campo debe ser una fecha.")]
@@ -31,13 +29,7 @@ namespace HotelManager.Models
         public string EstadoReserva { get; set; }
 
         // Relaciones
-        [DisplayName("Habitación")]
         public Habitacion Habitacion { get; set; }
-
-        [DisplayName("Factura")]
-        public EncabezadoFactura EncabezadoFactura { get; set; }
-
-        [DisplayName("Cliente")]
         public ApplicationUser ApplicationUser { get; set; }
 
         // Campos exclusivos de las vistas

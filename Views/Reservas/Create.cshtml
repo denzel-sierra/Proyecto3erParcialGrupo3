@@ -35,55 +35,54 @@
             {
                 <div class="col-md-4 border p-3">
 
-                <h4>Cliente</h4>
+                    <h4>Cliente</h4>
 
-                <div id="errorUsuario" class="text-danger" style="display:none;"></div>
+                    <div id="errorUsuario" class="text-danger" style="display:none;"></div>
 
-                <div class="form-group mb-4">
-                    <label asp-for="IDUsuario" class="control-label">ID del Cliente</label>
-                    <input asp-for="IDUsuario" class="form-control" readonly />
-                    <span asp-validation-for="IDUsuario" class="text-danger"></span>
-                </div>
+                    <div class="form-group mb-4" style="display:none;">
+                        <label asp-for="IDUsuario" class="control-label">ID del Cliente</label>
+                        <input asp-for="IDUsuario" class="form-control" readonly />
+                        <span asp-validation-for="IDUsuario" class="text-danger"></span>
+                    </div>
 
-                <div class="alert alert-success mt-3" role="alert" id="alertaUsuarioSeleccionado" style="display: none;">
-                    Cliente Seleccionado
-                </div>
+                    <div class="alert alert-success mt-3" role="alert" id="alertaUsuarioSeleccionado" style="display: none;">
+                        Cliente Seleccionado
+                    </div>
 
-                <div class="form-group">
-                    <label asp-for="NumeroIdentidad" class="control-label">Número de Identidad</label>
-                    <input asp-for="NumeroIdentidad" class="form-control" />
-                    <span asp-validation-for="NumeroIdentidad" class="text-danger"></span>
-                </div>
+                    <div class="form-group">
+                        <label asp-for="NumeroIdentidad" class="control-label">Número de Identidad</label>
+                        <input asp-for="NumeroIdentidad" class="form-control" />
+                        <span asp-validation-for="NumeroIdentidad" class="text-danger"></span>
+                    </div>
 
 
-                <div class="form-group">
-                    <label asp-for="Nombre" class="control-label">Nombre</label>
-                    <input asp-for="Nombre" class="form-control" />
-                </div>
+                    <div class="form-group">
+                        <label asp-for="Nombre" class="control-label">Nombre</label>
+                        <input asp-for="Nombre" class="form-control" />
+                    </div>
 
-                <!-- Agrega el campo de correo electrónico -->
-                <div class="form-group">
-                    <label asp-for="CorreoElectronico" class="control-label">Correo Electrónico</label>
-                    <input asp-for="CorreoElectronico" class="form-control" />
-                    <span asp-validation-for="CorreoElectronico" class="text-danger"></span>
-                </div>
+                    <!-- Agrega el campo de correo electrónico -->
+                    <div class="form-group">
+                        <label asp-for="CorreoElectronico" class="control-label">Correo Electrónico</label>
+                        <input asp-for="CorreoElectronico" class="form-control" />
+                        <span asp-validation-for="CorreoElectronico" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group">
-                    <label asp-for="Telefono" class="control-label">Número de Teléfono</label>
-                    <input asp-for="Telefono" class="form-control" />
-                </div>
+                    <div class="form-group">
+                        <label asp-for="Telefono" class="control-label">Número de Teléfono</label>
+                        <input asp-for="Telefono" class="form-control" />
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="Direccion" class="control-label">Dirección</label>
-                    <input asp-for="Direccion" class="form-control" />
-                </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Direccion" class="control-label">Dirección</label>
+                        <input asp-for="Direccion" class="form-control" />
+                    </div>
 
-                <!-- Añade el botón de búsqueda -->
-                <div class="form-group mb-3">
-                    <button type="button" class="btn btn-primary" id="btnBuscarUsuario">Buscar Usuario</button>
-                    <button type="button" id="btnLimpiarUsuario" class="btn btn-secondary align-self-end" style="display:none;" onclick="limpiarUsuario()">Limpiar</button>
-                </div>
-
+                    <!-- Añade el botón de búsqueda -->
+                    <div class="form-group mb-3">
+                        <button type="button" class="btn btn-primary" id="btnBuscarUsuario">Buscar Usuario</button>
+                        <button type="button" id="btnLimpiarUsuario" class="btn btn-secondary align-self-end" style="display:none;" onclick="limpiarUsuario()">Limpiar</button>
+                    </div>
 
                 </div>
             }
@@ -130,7 +129,7 @@
                     </div>
 
                     <div class="form-check">
-                        <label asp-for="Disponibilidad" class="form-check-label" for="chkSoloDisponibles">Solo Habitaciones Disponibles</label>
+                        <label asp-for="Disponibilidad" class="form-check-label" for="chkSoloDisponibles">Solo Habitaciones Actualmente Disponibles</label>
                         <input asp-for="Disponibilidad" type="checkbox" class="form-check-input" id="Disponibilidad">
                     </div>
 
@@ -188,7 +187,7 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="submit" value="Facturar" class="btn btn-primary" />
+                    <button type="submit" class="btn btn-primary">Crear</button>
                 </div>
 
             </div>
@@ -251,9 +250,11 @@
 </div>
 
 
-@section Scripts 
+@section Scripts
 {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script>
 
@@ -286,6 +287,13 @@
                     buscarUsuario();
                     e.preventDefault();
                 }
+            });
+
+            $(document).ready(function () {
+                // Manejador de clic en el botón Facturar
+                $('#btnFacturar').click(function () {
+
+                });
             });
         });
 
@@ -320,17 +328,27 @@
                 var diferenciaTiempo = fechaCheckOut - fechaCheckin;
                 var diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
 
-                // Actualizar el campo de cantidad de días
-                $('#CantidadDias').val(diferenciaDias);
+                // Verificar si la diferencia de días es menor a 1
+                if (diferenciaDias < 1) {
+                    // Mostrar un mensaje de error y borrar las fechas
+                    $('#FechaCheckin').val('');
+                    $('#FechaCheckOut').val('');
+                    $('#CantidadDias').val('');
+                    $('#errorFechas').text('La diferencia de días debe ser al menos 1').show();
+                } else {
+                    // Actualizar el campo de cantidad de días
+                    $('#CantidadDias').val(diferenciaDias);
 
-                // Ocultar el mensaje de error de fechas
-                $('#errorFechas').hide();
+                    // Ocultar el mensaje de error de fechas
+                    $('#errorFechas').hide();
+                }
             } else {
                 // Mostrar un mensaje de error si las fechas no son válidas
                 $('#CantidadDias').val('');
                 $('#errorFechas').text('Seleccione fechas válidas').show();
             }
         }
+
 
         function calcularTotalReserva() {
             var tarifa = parseFloat($('#Tarifa').val());
@@ -389,13 +407,13 @@
 
                             // Construir la fila de la tabla
                             var fila = `<tr>
-                                            <td>${usuario.numeroIdentidad}</td>
-                                            <td>${usuario.nombre}</td>
-                                            <td>${usuario.telefono}</td>
-                                            <td>${usuario.direccion}</td>
-                                            <td>${usuario.userName || 'N/A'}</td>
-                                            <td><button class='btn btn-primary' onclick='seleccionarUsuario("${encodeURIComponent(usuario.id)}", "${encodeURIComponent(usuario.numeroIdentidad)}", "${encodeURIComponent(usuario.nombre)}", "${encodeURIComponent(usuario.telefono)}", "${encodeURIComponent(usuario.direccion)}", "${encodeURIComponent(usuario.userName)}")'>Seleccionar</button></td>
-                                          </tr>`;
+                                                    <td>${usuario.numeroIdentidad}</td>
+                                                    <td>${usuario.nombre}</td>
+                                                    <td>${usuario.telefono}</td>
+                                                    <td>${usuario.direccion}</td>
+                                                    <td>${usuario.userName || 'N/A'}</td>
+                                                    <td><button class='btn btn-primary' onclick='seleccionarUsuario("${encodeURIComponent(usuario.id)}", "${encodeURIComponent(usuario.numeroIdentidad)}", "${encodeURIComponent(usuario.nombre)}", "${encodeURIComponent(usuario.telefono)}", "${encodeURIComponent(usuario.direccion)}", "${encodeURIComponent(usuario.userName)}")'>Seleccionar</button></td>
+                                                  </tr>`;
 
                             // Agregar la fila a la tabla
                             $("#tablaResultadosBody").append(fila);
@@ -405,7 +423,7 @@
                         $("#resultadosBusqueda").hide();
                         $('#errorUsuario').text('Usuario no encontrado').show();
                     }
-                },  
+                },
                 error: function (xhr, textStatus, errorThrown) {
                     console.log("Error al buscar usuario");
                 }
@@ -474,8 +492,8 @@
                             var habitacion = habitaciones[i];
 
                             // Construir la fila de la tabla
+                            // Construir la fila de la tabla
                             if (habitacion.disponibilidad) {
-                                console.log(habitacion.disponibilidad);
                                 var fila = `<tr>
                                                     <td>${habitacion.numero}</td>
                                                     <td>${habitacion.tipoHabitacion}</td>
@@ -492,30 +510,31 @@
                                                         )">Seleccionar</button>
                                                     </td>
                                                 </tr>`;
+
                                 // Agregar la fila a la tabla
                                 $("#tablaResultadosHabitaciones").append(fila);
                             } else {
                                 var fila = `<tr>
-                                                    <td>${habitacion.numero}</td>
-                                                    <td>${habitacion.tipoHabitacion}</td>
-                                                    <td class="text-danger">No Disponible</td>
-                                                    <td>${habitacion.tarifa}</td>
-                                                    <td>
-                                                        <button class="btn btn-primary" onclick="seleccionarHabitacion(
-                                                            '${encodeURIComponent(habitacion.idHabitacion)}',
-                                                            '${encodeURIComponent(habitacion.numero)}',
-                                                            '${encodeURIComponent(habitacion.idTipoHabitacion)}',
-                                                            '${encodeURIComponent(habitacion.tipoHabitacion)}',
-                                                            '${encodeURIComponent(habitacion.tarifa)}',
-                                                            '${habitacion.disponibilidad}'
-                                                        )">Seleccionar</button>
-                                                    </td>
-                                                </tr>`;
+                                                            <td>${habitacion.numero}</td>
+                                                            <td>${habitacion.tipoHabitacion}</td>
+                                                            <td class="text-danger">Ocupada</td>
+                                                            <td>${habitacion.tarifa}</td>
+                                                            <td>
+                                                                <button class="btn btn-primary" onclick="seleccionarHabitacion(
+                                                                    '${encodeURIComponent(habitacion.idHabitacion)}',
+                                                                    '${encodeURIComponent(habitacion.numero)}',
+                                                                    '${encodeURIComponent(habitacion.idTipoHabitacion)}',
+                                                                    '${encodeURIComponent(habitacion.tipoHabitacion)}',
+                                                                    '${encodeURIComponent(habitacion.tarifa)}',
+                                                                    '${habitacion.disponibilidad}'
+                                                                )">Seleccionar</button>
+                                                            </td>
+                                                        </tr>`;
 
                                 // Agregar la fila a la tabla
                                 $("#tablaResultadosHabitaciones").append(fila);
                             }
-                            
+
                         }
                     } else {
                         // Ocultar la tabla de resultados si no se encontraron habitaciones
@@ -535,6 +554,9 @@
         }
 
         function seleccionarHabitacion(idHabitacion, numeroHabitacion, idTipoHabitacion, tipoHabitacion, tarifa, disponibilidad) {
+            var fechaCheckin = $('#FechaCheckin').val();
+            var fechaCheckOut = $('#FechaCheckOut').val();
+
             if (disponibilidad == "true") {
                 // Asignar los valores de la habitación seleccionada a los campos de búsqueda
                 $("#IDHabitacion").val(decodeURIComponent(idHabitacion)).prop('readonly', true).addClass('is-valid');
@@ -553,7 +575,7 @@
                 $("#btnLimpiarHabitacion").show();
                 $('#errorHabitacion').hide();
                 calcularTotalReserva();
-            }else{
+            } else {
                 $('#errorHabitacion').text('Hacitacion no esta disponible').show();
             }
         }
@@ -570,6 +592,29 @@
             $("#alertaHabitacionSeleccionada").hide();
 
         }
+
+        function verificarDisponibilidadHabitacion(idHabitacion, fechaCheckin, fechaCheckOut) {
+            $.ajax({
+                url: '@Url.Action("VerificarDisponibilidadHabitacion", "Reservas")',
+                type: 'GET',
+                data: {
+                    idHabitacion: idHabitacion,
+                    fechaCheckin: fechaCheckin,
+                    fechaCheckOut: fechaCheckOut
+                },
+                success: function (disponible) {
+                    if (disponible) {
+                        seleccionarHabitacion(idHabitacion);
+                    } else {
+                        $('#errorHabitacion').text('Habitación no disponible en las fechas seleccionadas').show();
+                    }
+                },
+                error: function () {
+                    console.log('Error al verificar disponibilidad.');
+                }
+            });
+        }
+
 
     </script>
 

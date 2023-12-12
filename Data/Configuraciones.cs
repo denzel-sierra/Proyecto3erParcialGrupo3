@@ -15,6 +15,9 @@ namespace HotelManager.Data
                 //llave foranea
 
                 builder.Property(s => s.EstadoCita).HasColumnType("varchar(255)");
+
+                builder.HasOne(r => r.ApplicationUser).WithMany().HasForeignKey(r => r.IDUsuario).IsRequired(true).OnDelete(DeleteBehavior.NoAction);
+
             }
         }
         public class CorrelativoSARConfig : IEntityTypeConfiguration<CorrelativoSAR>
@@ -25,28 +28,6 @@ namespace HotelManager.Data
                 builder.HasKey(x => x.IDCorrelativoSAR);
 
                 builder.Property(s => s.NumeroCAI).HasColumnType("varchar(255)");
-            }
-        }
-        public class DetalleProductoFacturaConfig : IEntityTypeConfiguration<DetalleProductoFactura>
-        {
-            public void Configure(EntityTypeBuilder<DetalleProductoFactura> builder)
-            {
-                //llave
-                builder.HasKey(x => x.IDDetalleFactura);
-                builder.Property(a => a.PrecioUnitario).HasColumnType("decimal(8,2)").HasColumnName("PrecioUnitario");
-                builder.Property(a => a.SubTotalLinea).HasColumnType("decimal(8,2)").HasColumnName("SubTotalLinea");
-            }
-        }
-        public class DetalleServicioFacturaConfig : IEntityTypeConfiguration<DetalleServicioFactura>
-        {
-            public void Configure(EntityTypeBuilder<DetalleServicioFactura> builder)
-            {
-                //llave
-                builder.HasKey(x => x.IDDetalleFactura);
-
-                builder.Property(a => a.PrecioUnitario).HasColumnType("decimal(8,2)").HasColumnName("PrecioUnitario");
-                builder.Property(a => a.SubTotalLinea).HasColumnType("decimal(8,2)").HasColumnName("SubTotalLinea");
-
             }
         }
         public class EncabezadoFacturaConfig : IEntityTypeConfiguration<EncabezadoFactura>
@@ -62,11 +43,23 @@ namespace HotelManager.Data
                 builder.Property(a => a.ImpuestoFactura).HasColumnType("decimal(8,2)").HasColumnName("ImpuestoFactura");
                 builder.Property(a => a.TotalFactura).HasColumnType("decimal(8,2)").HasColumnName("TotalFactura");
 
-                //llave foranea
-                builder.HasMany(a => a.Reservas).WithOne(a => a.EncabezadoFactura).HasForeignKey(a => a.IDFactura);
-                builder.HasMany(a => a.DetalleProductoFacturas).WithOne(a => a.EncabezadoFactura).HasForeignKey(a => a.IDFactura);
-                builder.HasMany(a => a.DetalleServicioFacturas).WithOne(a => a.EncabezadoFactura).HasForeignKey(a => a.IDFactura);
+                // Campo de IDReserva en EncabezadoFactura
+                builder.Property(x => x.IDReserva).IsRequired(true);
+
+                // Relación uno a uno con Reserva
+                builder.HasOne(r => r.Reserva)
+                    .WithOne()
+                    .HasForeignKey<EncabezadoFactura>(r => r.IDReserva)
+                    .IsRequired(true)
+                    .OnDelete(DeleteBehavior.NoAction);
+
                 builder.HasOne(r => r.ApplicationUser).WithMany().HasForeignKey(r => r.IDUsuario).IsRequired(true);
+
+                builder.HasOne(ef => ef.CorrelativoSAR)
+                   .WithMany(cs => cs.EncabezadoFacturas)
+                   .HasForeignKey(ef => ef.IDCorrelativoSAR)
+                   .IsRequired(true)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             }
         }
@@ -85,19 +78,6 @@ namespace HotelManager.Data
 
             }
         }
-        public class ProductoConfig : IEntityTypeConfiguration<Producto>
-        {
-            public void Configure(EntityTypeBuilder<Producto> builder)
-            {
-                //llave
-                builder.HasKey(x => x.IDProducto);
-
-                builder.Property(s => s.NombreProducto).HasColumnType("varchar(255)");
-                builder.Property(s => s.Descripcion).HasColumnType("varchar(255)");
-                builder.Property(a => a.PrecioUnitario).HasColumnType("decimal(8,2)").HasColumnName("PrecioUnitario");
-
-            }
-        }
         public class ReservaConfig : IEntityTypeConfiguration<Reserva>
         {
             public void Configure(EntityTypeBuilder<Reserva> builder)
@@ -111,20 +91,6 @@ namespace HotelManager.Data
 
             }
         }
-        public class ServicioHotelConfig : IEntityTypeConfiguration<ServicioHotel>
-        {
-            public void Configure(EntityTypeBuilder<ServicioHotel> builder)
-            {
-                //llave
-                builder.HasKey(x => x.IDServicio);
-
-                builder.Property(s => s.NombreServicio).HasColumnType("varchar(255)");
-                builder.Property(s => s.Descripcion).HasColumnType("varchar(255)");
-                builder.Property(a => a.Tarifa).HasColumnType("decimal(8,2)").HasColumnName("Tarifa");
-
-            }
-        }
-
         public class TipoHabitacionConfig : IEntityTypeConfiguration<TipoHabitacion>
         {
             public void Configure(EntityTypeBuilder<TipoHabitacion> builder)

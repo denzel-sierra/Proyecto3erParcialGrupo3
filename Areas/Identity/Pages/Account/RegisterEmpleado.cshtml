@@ -1,14 +1,14 @@
 ﻿@page
 @model RegisterEmpleadoModel
 @{
-    ViewData["Title"] = "Registro";
+    ViewData["Title"] = "Registro de Empleados";
 }
 
-<div class="container">
+<div class="container mt-5 pt-5">
     <div class="row justify-content-center">
         <div class="col-md-4">
             <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                <h2 class="text-center">Registrar un Nuevo Empleado en el Sistema</h2>
+                <h2 class="text-center">Registro de Empleados</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 

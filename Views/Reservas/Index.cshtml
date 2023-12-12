@@ -11,21 +11,26 @@
 <h3 class="mt-5 pt-5">Historial de Reservas</h3>
 <hr />
 
-<div class="btn-group filter-controls">
-    @if (!User.IsInRole("Cliente"))
-    {
-        <a asp-action="Create" class="btn btn-primary">Reservar para un cliente</a>
-    }
-    <button id="btnPrevMonth">Mes Anterior</button>
-    <button id="btnNextMonth">Mes Siguiente</button>
+@if (!User.IsInRole("Cliente"))
+{
+    <a asp-action="Create" class="btn btn-primary">Reservar para un cliente</a>
+}
+
+<div class="btn-group">
+    <button id="btnPrevMonth" class="btn btn-light">◄</button>
+    <a class="btn btn-light" id="mesActual">Enero</a>
+    <button id="btnNextMonth" class=" btn btn-light">►</button>
 </div>
 
 <table class="table" id="tablaReservas">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ApplicationUser)
-            </th>
+            @if (!User.IsInRole("Cliente"))
+            {
+                <th>
+                    Cliente
+                </th> 
+            }
             <th>
                 @Html.DisplayNameFor(model => model.Habitacion)
             </th>
@@ -39,14 +44,11 @@
             <th>
                 @Html.DisplayNameFor(model => model.EstadoReserva)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EncabezadoFactura)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        
+
     </tbody>
 </table>
 
@@ -69,26 +71,39 @@
                     success: function (reservas) {
                         // Limpiar la tabla
                         $('#tablaReservas tbody').empty();
+                        console.log(reservas);
 
                         // Llenar la tabla con las reservas
                         $.each(reservas, function (index, reserva) {
+                            var fechaCheckin = new Date(reserva.fechaCheckin);
+                            var fechaCheckOut = new Date(reserva.fechaCheckOut);
                             $('#tablaReservas tbody').append(
                                 `<tr>
-                                     <td>${reserva.nombreUsuario}</td>
                                      <td>${reserva.habitacion}</td>
                                      <td>${reserva.tipoHabitacion}</td>
-                                     <td>${reserva.fechaCheckin}</td>
-                                     <td>${reserva.fechaCheckOut}</td>
+                                     <td>${fechaCheckin.toLocaleDateString()}</td>
+                                     <td>${fechaCheckOut.toLocaleDateString()}</td>
                                      <td>${reserva.estadoReserva}</td>
-                                     <td><a class="btn btn-outline-info" asp-area="" asp-controller="EncabezadoFactura" asp-action="Details" asp-route-id="${reserva.idFactura}">Ver</a></td>
                                 </tr>`
                             );
                         });
+
+                        // Actualizar el nombre del mes actual en el elemento con id mesActual
+                        $('#mesActual').text(obtenerNombreMes(mes));
                     },
                     error: function (error) {
                         console.error('Error al obtener las reservas: ', error);
                     }
                 });
+            }
+
+            // Función para obtener el nombre del mes a partir de su número
+            function obtenerNombreMes(numeroMes) {
+                var meses = [
+                    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+                    "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                ];
+                return meses[numeroMes - 1]; // Restar 1 ya que los meses comienzan desde 0
             }
 
             // Obtener la fecha y año actual
@@ -127,7 +142,5 @@
 
         });
     </script>
-
-
 
 }

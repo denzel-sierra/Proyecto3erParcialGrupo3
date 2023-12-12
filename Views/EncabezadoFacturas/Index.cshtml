@@ -1,90 +1,102 @@
 ﻿@model IEnumerable<HotelManager.Models.EncabezadoFactura>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+@if (User.IsInRole("Cliente"))
+{
+    <h1 class="mt-5 pt-5">Mis Facturas</h1>
+}@if (!User.IsInRole("Cliente"))
+{
+    <h1 class="mt-5 pt-5">Facturas</h1>
+}
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.IDCorrelativoSAR)
+                Número de Factura
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IDEmpleado)
+                Fecha
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.NumeroFacturaSAR)
+                Total
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaFactura)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubTotalFactura)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DescuentoFactura)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImpuestoFactura)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalFactura)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Eliminada)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ApplicationUser)
-            </th>
+            @if (!User.IsInRole("Cliente"))
+            {
+                <th>
+                    Numero de Identidad
+                </th>
+                <th>
+                    Cliente
+                </th>
+            }
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IDCorrelativoSAR)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IDEmpleado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumeroFacturaSAR)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaFactura)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubTotalFactura)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DescuentoFactura)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImpuestoFactura)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalFactura)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Eliminada)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApplicationUser.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IDFactura">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IDFactura">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IDFactura">Delete</a>
-            </td>
-        </tr>
-}
+        @if (User.IsInRole("Cliente"))
+        {
+            @foreach (var item in Model)
+            {
+                @if (item.IDUsuario.Equals(UserManager.GetUserId(User)))
+                {
+                    @if (!item.Eliminada)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.NumeroFacturaSAR)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FechaFactura)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TotalFactura)
+                            </td>
+                            <td class="btn-group">
+                                <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.IDFactura">Detalles</a>
+                            </td>
+                        </tr>                        
+                    }
+                }
+            }
+
+        }
+        @if (!User.IsInRole("Cliente"))
+        {
+            @foreach (var item in Model) {
+                @if (!item.Eliminada)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NumeroFacturaSAR)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FechaFactura)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TotalFactura)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ApplicationUser.NumeroIdentidad)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ApplicationUser.Nombre)
+                        </td>
+                        <td class="btn-group">
+                            <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.IDFactura">Detalles</a>
+                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.IDFactura">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+            }    
+        }
     </tbody>
 </table>

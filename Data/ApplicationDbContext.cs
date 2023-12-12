@@ -19,20 +19,11 @@ namespace HotelManager.Data
         public DbSet<Cita> Cita { get; set; }
         //--- CorrelativoSAR
         public DbSet<CorrelativoSAR> CorrelativoSAR { get; set; }
-        //--- DetalleProductoFactura
-        public DbSet<DetalleProductoFactura> DetalleProductoFactura { get; set; }
-        //--- DetalleServicioFactura
-        public DbSet<DetalleServicioFactura> DetalleServicioFactura { get; set; }
-        //--- EncabezadoFactura
         public DbSet<EncabezadoFactura> EncabezadoFactura { get; set; }
         //--- Habitacion
         public DbSet<Habitacion> Habitacion { get; set; }
-        //--- Producto
-        public DbSet<Producto> Producto { get; set; }
         //--- Reserva
         public DbSet<Reserva> Reserva { get; set; }
-        //--- ServicioHotel
-        public DbSet<ServicioHotel> ServicioHotel { get; set; }
         //--- TipoHabitacion}
         public DbSet<TipoHabitacion> TipoHabitacion { get; set; }
 
@@ -44,20 +35,12 @@ namespace HotelManager.Data
             modelBuilder.ApplyConfiguration(new CitasConfig());
             // CorrelativoSAR
             modelBuilder.ApplyConfiguration(new CorrelativoSARConfig());
-            // DetalleProductoFacturaConfig
-            modelBuilder.ApplyConfiguration(new DetalleProductoFacturaConfig());
-            // DetalleServicioFacturaConfig
-            modelBuilder.ApplyConfiguration(new DetalleServicioFacturaConfig());
             // EncabezadoFacturaConfig
             modelBuilder.ApplyConfiguration(new EncabezadoFacturaConfig());
             // HabitacionConfig
             modelBuilder.ApplyConfiguration(new HabitacionConfig());
-            // ProductoConfig
-            modelBuilder.ApplyConfiguration(new ProductoConfig());
             // ReservaConfig
             modelBuilder.ApplyConfiguration(new ReservaConfig());
-            // ServicioHotelConfig
-            modelBuilder.ApplyConfiguration(new ServicioHotelConfig());
             modelBuilder.ApplyConfiguration(new TipoHabitacionConfig());
         }
     }

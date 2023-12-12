@@ -62,19 +62,24 @@ namespace HotelManager.Controllers
         // Procesa la creación de un nuevo correlativo SAR, con validación del modelo y redirección a la lista de correlativos SAR
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IDCorrelativoSAR,NumeroCAI,NumeroInicial,NumeroFinal,UltimoUtilizado,FechaInicial,FechaLimite,FechaFinal,Finalizado")] CorrelativoSAR correlativoSAR)
+        public async Task<IActionResult> Create([Bind("IDCorrelativoSAR,NumeroCAI,NumeroInicial,NumeroFinal,FechaInicial,FechaLimite")] CorrelativoSAR correlativoSAR)
         {
-
             // Asignar un nuevo GUID como ID del correlativo SAR
             correlativoSAR.IDCorrelativoSAR = Guid.NewGuid();
+
+            // Asignar valores específicos a los campos eliminados
+            correlativoSAR.UltimoUtilizado = 0; // Puedes ajustar la lógica según tus requerimientos
+            correlativoSAR.FechaFinal = null; // Puedes ajustar la lógica según tus requerimientos
+            correlativoSAR.Finalizado = false; // Puedes ajustar la lógica según tus requerimientos
+
             // Agregar el correlativo SAR al contexto y guardar los cambios
             _context.Add(correlativoSAR);
             await _context.SaveChangesAsync();
+
             // Redirección a la lista de correlativos SAR
             return RedirectToAction(nameof(Index));
-
-            return View(correlativoSAR);
         }
+
 
         // GET: CorrelativoSARs/Edit/5
         // Muestra el formulario para editar un correlativo SAR existente
@@ -191,6 +196,16 @@ namespace HotelManager.Controllers
         {
             // Verificar la existencia de un correlativo SAR con el ID proporcionado
             return (_context.CorrelativoSAR?.Any(e => e.IDCorrelativoSAR == id)).GetValueOrDefault();
+        }
+
+        [HttpGet]
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> IsNumeroCAIUnique(string numeroCAI)
+        {
+            var isUnique = await _context.CorrelativoSAR
+                .AllAsync(c => c.NumeroCAI != numeroCAI);
+
+            return Json(isUnique);
         }
     }
 }

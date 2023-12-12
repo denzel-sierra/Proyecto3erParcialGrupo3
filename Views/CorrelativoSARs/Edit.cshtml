@@ -1,13 +1,12 @@
 ﻿@model HotelManager.Models.CorrelativoSAR
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Correlativo";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1 class="mt-5 pt-5">Editar Correlativo</h1>
 
-<h4>CorrelativoSAR</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -16,37 +15,37 @@
             <input type="hidden" asp-for="IDCorrelativoSAR" />
             <div class="form-group">
                 <label asp-for="NumeroCAI" class="control-label"></label>
-                <input asp-for="NumeroCAI" class="form-control" />
+                <input asp-for="NumeroCAI" class="form-control" readonly/>
                 <span asp-validation-for="NumeroCAI" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="NumeroInicial" class="control-label"></label>
-                <input asp-for="NumeroInicial" class="form-control" />
+                <input asp-for="NumeroInicial" class="form-control" readonly/>
                 <span asp-validation-for="NumeroInicial" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="NumeroFinal" class="control-label"></label>
-                <input asp-for="NumeroFinal" class="form-control" />
+                <input asp-for="NumeroFinal" class="form-control" readonly/>
                 <span asp-validation-for="NumeroFinal" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="UltimoUtilizado" class="control-label"></label>
-                <input asp-for="UltimoUtilizado" class="form-control" />
+                <input asp-for="UltimoUtilizado" class="form-control" readonly/>
                 <span asp-validation-for="UltimoUtilizado" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="FechaInicial" class="control-label"></label>
-                <input asp-for="FechaInicial" class="form-control" />
+                <input asp-for="FechaInicial" class="form-control" readonly/>
                 <span asp-validation-for="FechaInicial" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="FechaLimite" class="control-label"></label>
-                <input asp-for="FechaLimite" class="form-control" />
+                <input asp-for="FechaLimite" class="form-control" readonly/>
                 <span asp-validation-for="FechaLimite" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="FechaFinal" class="control-label"></label>
-                <input asp-for="FechaFinal" class="form-control" />
+                <input asp-for="FechaFinal" class="form-control" readonly/>
                 <span asp-validation-for="FechaFinal" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
@@ -55,14 +54,14 @@
                 </label>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Guardar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Regresar a la lista</a>
 </div>
 
 @section Scripts {

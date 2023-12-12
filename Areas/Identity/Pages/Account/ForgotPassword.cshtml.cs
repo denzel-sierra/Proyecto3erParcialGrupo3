@@ -3,6 +3,7 @@
 #nullable disable
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -44,9 +45,17 @@ namespace HotelManager.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "Es necesario ingresar el correo electrónico")]
             [EmailAddress]
             public string Email { get; set; }
+
+            [Required(ErrorMessage = "Por favor, ingrese la nueva contraseña que desea establecer")]
+            [PasswordPropertyText]
+            public string NewPassword { get; set; }
+
+            [Required(ErrorMessage = "Por favor, ingresela de nuevo para confirmarla")]
+            [PasswordPropertyText]
+            public string ConfirmPassword { get; set; }
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -60,22 +69,30 @@ namespace HotelManager.Areas.Identity.Pages.Account
                     return RedirectToPage("./ForgotPasswordConfirmation");
                 }
 
-                // For more information on how to enable account confirmation and password reset please
-                // visit https://go.microsoft.com/fwlink/?LinkID=532713
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ResetPassword",
-                    pageHandler: null,
-                    values: new { area = "Identity", code },
-                    protocol: Request.Scheme);
+                // Verificar que la contraseña y la confirmación coincidan
+                if (Input.NewPassword != Input.ConfirmPassword)
+                {
+                    ModelState.AddModelError(string.Empty, "La contraseña y la confirmación de contraseña no coinciden.");
+                    return Page();
+                }
 
-                await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                // Reset the user's password directly
+                var result = await _userManager.RemovePasswordAsync(user);
+                if (result.Succeeded)
+                {
+                    result = await _userManager.AddPasswordAsync(user, Input.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        TempData["ResetPasswordSuccess"] = "Tu contraseña ha sido reiniciada con éxito.";
+                        return RedirectToPage("./ForgotPasswordConfirmation");
+                    }
+                }
 
-                return RedirectToPage("./ForgotPasswordConfirmation");
+                // Handle errors if the password reset or addition fails
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
 
             return Page();

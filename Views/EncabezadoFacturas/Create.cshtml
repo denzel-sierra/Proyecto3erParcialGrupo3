@@ -1,78 +1,235 @@
 ﻿@model HotelManager.Models.EncabezadoFactura
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="mt-5 pt-5">Facturar Reserva</h1>
 
-<h4>EncabezadoFactura</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group style=" style="display: none;">
                 <label asp-for="IDCorrelativoSAR" class="control-label"></label>
-                <input asp-for="IDCorrelativoSAR" class="form-control" />
+                <input id="IDCorrelativoSAR" asp-for="IDCorrelativoSAR" class="form-control" />
                 <span asp-validation-for="IDCorrelativoSAR" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="IDEmpleado" class="control-label"></label>
-                <input asp-for="IDEmpleado" class="form-control" />
-                <span asp-validation-for="IDEmpleado" class="text-danger"></span>
+            <div class="form-group" style="display: none;">
+                <label asp-for="IDReserva" class="control-label"></label>
+                <input asp-for="IDReserva" class="form-control" value="@ViewBag.IDReserva" readonly />
+            </div>
+            <div class="form-group" style="display: none;">
+                <label asp-for="IDUsuario" class="control-label" ></label>
+                <input asp-for="IDUsuario" class="form-control" readonly />
+            </div>
+            <div class="form-group" style="display: none;">
+                <label asp-for="NumeroFacturaSAR" class="control-label" ></label>
+                <input asp-for="NumeroFacturaSAR" class="form-control" readonly />
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Campos de la primera columna -->
+                    <div class="form-group">
+                        <label asp-for="SubTotalFactura" class="control-label"></label>
+                        <input asp-for="SubTotalFactura" class="form-control" readonly />
+                        <span asp-validation-for="SubTotalFactura" class="text-danger"></span>
+                    </div>
+                    @if (!User.IsInRole("Cliente"))
+                    {
+                        <div class="form-group">
+                            <label asp-for="DescuentoFactura" class="control-label"></label>
+                            <input asp-for="DescuentoFactura" class="form-control" />
+                            <span asp-validation-for="DescuentoFactura" class="text-danger"></span>
+                        </div>                       
+                    }
+                    <div class="form-group">
+                        <label asp-for="ImpuestoFactura" class="control-label"></label>
+                        <input asp-for="ImpuestoFactura" class="form-control" readonly />
+                        <span asp-validation-for="ImpuestoFactura" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TotalFactura" class="control-label"></label>
+                        <input asp-for="TotalFactura" class="form-control" readonly />
+                        <span asp-validation-for="TotalFactura" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- Campos de la segunda columna -->
+                    <div class="form-group">
+                        <label for="NumeroIdentidad" class="control-label">Número de Identidad</label>
+                        <input id="NumeroIdentidad" class="form-control" value="" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="Nombre" class="control-label">Nombre</label>
+                        <input id="Nombre" class="form-control" value="" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="FechaCheckIn" class="control-label">Fecha de Check-In</label>
+                        <input id="FechaCheckIn" class="form-control" value="" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="FechaCheckOut" class="control-label">Fecha de Check-Out</label>
+                        <input id="FechaCheckOut" class="form-control" value="" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="CantidadDias" class="control-label">Cantidad de Días</label>
+                        <input id="CantidadDias" class="form-control" value="" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="Tarifa" class="control-label">Tarifa</label>
+                        <input id="Tarifa" class="form-control" type="text" value="" readonly />
+                    </div>
+                </div>
             </div>
             <div class="form-group">
-                <label asp-for="IDUsuario" class="control-label"></label>
-                <select asp-for="IDUsuario" class ="form-control" asp-items="ViewBag.IDUsuario"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="NumeroFacturaSAR" class="control-label"></label>
-                <input asp-for="NumeroFacturaSAR" class="form-control" />
-                <span asp-validation-for="NumeroFacturaSAR" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaFactura" class="control-label"></label>
-                <input asp-for="FechaFactura" class="form-control" />
-                <span asp-validation-for="FechaFactura" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SubTotalFactura" class="control-label"></label>
-                <input asp-for="SubTotalFactura" class="form-control" />
-                <span asp-validation-for="SubTotalFactura" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DescuentoFactura" class="control-label"></label>
-                <input asp-for="DescuentoFactura" class="form-control" />
-                <span asp-validation-for="DescuentoFactura" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImpuestoFactura" class="control-label"></label>
-                <input asp-for="ImpuestoFactura" class="form-control" />
-                <span asp-validation-for="ImpuestoFactura" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalFactura" class="control-label"></label>
-                <input asp-for="TotalFactura" class="form-control" />
-                <span asp-validation-for="TotalFactura" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Eliminada" /> @Html.DisplayNameFor(model => model.Eliminada)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Facturar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+<!-- Agrega este bloque de script al final de tu vista Create.cshtml -->
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            var idReserva = $('#IDReserva').val();
+
+            function actualizarCampos() {
+                var cantidadDias = parseInt($('#CantidadDias').val());
+                var tarifaHabitacion = parseFloat($('#Tarifa').val());
+
+                if (!isNaN(cantidadDias) && !isNaN(tarifaHabitacion)) {
+                    // Calcular el Subtotal sin Descuento (en este caso, solo consideramos la tarifa de la habitación)
+                    var subtotalSinDescuento = cantidadDias * tarifaHabitacion;
+
+                    // Obtener el Descuento como porcentaje (suponiendo que el campo de descuento representa un porcentaje)
+                    var porcentajeDescuento = parseFloat($('#DescuentoFactura').val()) || 0;
+
+                    // Calcular el Descuento en base al porcentaje
+                    var descuento = (subtotalSinDescuento * porcentajeDescuento) / 100;
+
+                    // Aplicar Descuento al Subtotal sin Descuento
+                    var subtotalConDescuento = subtotalSinDescuento - descuento;
+
+                    // Calcular el Impuesto sobre el Subtotal con Descuento (en este caso, se asume un impuesto del 15%)
+                    var impuesto = subtotalConDescuento * 0.15;
+
+                    // Calcular el Total con Descuento
+                    var totalConDescuento = subtotalConDescuento + impuesto;
+
+                    // Actualizar campos en el formulario
+                    $('#SubTotalFactura').val(subtotalConDescuento.toFixed(2)); // Ajustar decimales según sea necesario
+                    $('#ImpuestoFactura').val(impuesto.toFixed(2)); // Ajustar decimales según sea necesario
+                    $('#TotalFactura').val(totalConDescuento.toFixed(2)); // Ajustar decimales según sea necesario
+                }
+            }
+
+            $.ajax({
+                url: `/EncabezadoFacturas/GetReservaDetails?idReserva=${idReserva}`,
+                type: 'GET',
+                data: {idReserva: idReserva},
+                success: function (data) {
+                    // Imprime en la consola los detalles de la reserva
+                    console.log('Detalles de la Reserva:', data);
+
+                    // Puedes utilizar los datos de la reserva según tus necesidades
+                    // Por ejemplo, para llenar campos en el formulario
+                    $('#FechaCheckIn').val(formatoFecha(data.fechaCheckin));
+                    $('#FechaCheckOut').val(formatoFecha(data.fechaCheckOut));
+                    $('#IDUsuario').val(data.idUsuario);
+                    var idUsuario = data.idUsuario;
+                    $.ajax({
+                        url: `/EncabezadoFacturas/ObtenerUsuario?idUsuario=${idUsuario}`,
+                        type: 'GET',
+                        data: { idUsuario: idUsuario },
+                        success: function (data) {
+                            $('#NumeroIdentidad').val(data.numeroIdentidad);
+                            $('#Nombre').val(data.nombre);
+                        },
+                        error: function (error) {
+                            console.error('Error al obtener los datos del usuario:', error);
+                        }
+                    });
+                    $('#Nombre').val(data.nombre);
+                    $('#CantidadDias').val(data.cantidadDias);
+                    var idHabitacion = data.idHabitacion;
+                    $.ajax({
+                        url: `/EncabezadoFacturas/ObtenerHabitacion?idHabitacion=${idHabitacion}`,
+                        type: 'GET',
+                        data: { idHabitacion: idHabitacion },
+                        success: function (data) {
+                            $('#Tarifa').val(data.tarifa);
+                            actualizarCampos();
+                        },
+                        error: function (error) {
+                            console.error('Error al obtener la habitación:', error);
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.error('Error al obtener detalles de la reserva:', error);
+                }
+            });
+
+            // Realiza una solicitud AJAX para obtener el ID del correlativo no finalizado
+            $.ajax({
+                url: '@Url.Action("GetCorrelativoNoFinalizado", "EncabezadoFacturas")',
+                type: 'GET',
+                success: function (data) {
+                    console.log(data);
+                    $('#IDCorrelativoSAR').val(data.idCorrelativoSAR);
+                    var idCorrelativo = data.idCorrelativoSAR;
+                    $.ajax({
+                        type: "GET",
+                        url: "/EncabezadoFacturas/ObtenerCorrelativo?idCorrelativo=" + idCorrelativo,
+                        data: { idCorrelativo: idCorrelativo },
+                        success: function (correlativo) {
+                            if (correlativo) {
+                                // Actualiza el campo NumeroFacturaSAR
+                                $("#NumeroFacturaSAR").val(correlativo.ultimoUtilizado + 1);
+                                console.log($("#NumeroFacturaSAR").val())
+                            }
+                        },
+                        error: function (error) {
+                            console.error("Error al obtener el correlativo: ", error);
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.error('Error al obtener el correlativo no finalizado:', error);
+                }
+            });
+
+            function formatoFecha(fecha) {
+                if (!fecha) return '';
+
+                var fechaObj = new Date(fecha);
+                var dia = fechaObj.getDate();
+                var mes = fechaObj.getMonth() + 1; // Los meses en JavaScript son 0-indexados
+                var año = fechaObj.getFullYear();
+
+                // Asegúrate de tener dos dígitos para el día y el mes
+                dia = dia < 10 ? '0' + dia : dia;
+                mes = mes < 10 ? '0' + mes : mes;
+
+                return `${dia}/${mes}/${año}`;
+            }
+
+            $('#DescuentoFactura').on('input', function () {
+                // Actualizar los campos cuando cambia el descuento
+                actualizarCampos();
+            });
+        });
+    </script>
 }
+

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelManager.Models
 {
@@ -27,5 +28,8 @@ namespace HotelManager.Models
         // Relación de navegación
         [Required(ErrorMessage = "El campo TipoHabitacion es obligatorio.")]
         public TipoHabitacion TipoHabitacion { get; set; }
+
+        [NotMapped]
+        public string DisponibilidadTexto { get; set; }
     }
 }

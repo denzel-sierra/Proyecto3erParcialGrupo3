@@ -1,0 +1,86 @@
+﻿@model HotelManager.Models.Cita
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4 class="pt-5 mt-5">Cita</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IDCita" />
+            <div class="form-group" style="display:none;">
+                <label asp-for="IDUsuario" class="control-label"></label>
+                <input asp-for="IDUsuario" class="form-control" readonly />
+                <span asp-validation-for="IDUsuario" class="text-danger"></span>
+            </div>
+            <div class="form-group" style="display:none;">
+                <label asp-for="IDEmpleado" class="control-label"></label>
+                <input asp-for="IDEmpleado" class="form-control" readonly />
+                <span asp-validation-for="IDEmpleado" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="NombreCliente" class="control-label">Nombre del Cliente</label>
+                <input id="NombreCliente" class="form-control" value="" readonly />
+            </div>
+            <div class="form-group">
+                <label for="NombreEmpleado" class="control-label">Nombre del Empleado</label>
+                <input id="NombreEmpleado" class="form-control" value="" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaHoraCita" class="control-label"></label>
+                <input asp-for="FechaHoraCita" class="form-control" readonly/>
+                <span asp-validation-for="FechaHoraCita" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EstadoCita" class="control-label"></label>
+                <input asp-for="EstadoCita" class="form-control" readonly/>
+                <span asp-validation-for="EstadoCita" class="text-danger"></span>
+            </div>
+            <div class="btn-group mt-3">
+                <a class="btn btn-danger" asp-action="Index">Cancelar</a>
+                <input type="submit" value="Confirmar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            var idCliente = $('#IDUsuario').val();
+            var idEmpleado = $('#IDEmpleado').val();
+
+            $.ajax({
+                url: '@Url.Action("ObtenerUSuario", "Citas")',
+                type: 'GET',
+                data: {idUsuario: idCliente},
+                success: function (data) {
+                    $('#NombreCliente').val(data.nombre);
+                },
+                error: function (error) {
+                    console.error('Error al obtener los datos del usuario:', error);
+                }
+            });
+
+            $.ajax({
+                url: '@Url.Action("ObtenerUSuario", "Citas")',
+                type: 'GET',
+                data: { idUsuario: idEmpleado },
+                success: function (data) {
+                    $('#NombreEmpleado').val(data.nombre);
+                },
+                error: function (error) {
+                    console.error('Error al obtener los datos del usuario:', error);
+                }
+            });
+        });
+    </script>
+}

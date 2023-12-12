@@ -7,43 +7,45 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelManager.Data;
 using HotelManager.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelManager.Controllers
 {
+    [Authorize]
     public class EncabezadoFacturasController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        // Constructor del controlador que recibe una instancia de ApplicationDbContext
-        public EncabezadoFacturasController(ApplicationDbContext context)
+
+        public EncabezadoFacturasController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: EncabezadoFacturas/Index
-        // Muestra la lista de encabezados de facturas con detalles de ApplicationUser
+        // GET: EncabezadoFacturas
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.EncabezadoFactura.Include(e => e.ApplicationUser);
+            var applicationDbContext = _context.EncabezadoFactura.Include(e => e.ApplicationUser).Include(e => e.Reserva).Where(e => !e.Eliminada);
             return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: EncabezadoFacturas/Details/5
-        // Muestra los detalles de un encabezado de factura específico con detalles de ApplicationUser
-        public async Task<IActionResult> Details(Guid? id)
+        public async Task<IActionResult> Details(Guid? idReserva)
         {
-            // Validación de parámetros
-            if (id == null || _context.EncabezadoFactura == null)
+            if (idReserva == null)
             {
                 return NotFound();
             }
 
-            // Obtener el encabezado de factura con detalles de ApplicationUser
+            // Buscar la factura que corresponde al IDReserva proporcionado
             var encabezadoFactura = await _context.EncabezadoFactura
                 .Include(e => e.ApplicationUser)
-                .FirstOrDefaultAsync(m => m.IDFactura == id);
+                .Include(e => e.Reserva)
+                .FirstOrDefaultAsync(m => m.Reserva.IDReserva == idReserva);
 
-            // Validación de existencia del encabezado de factura
             if (encabezadoFactura == null)
             {
                 return NotFound();
@@ -53,154 +55,220 @@ namespace HotelManager.Controllers
         }
 
         // GET: EncabezadoFacturas/Create
-        // Muestra el formulario para crear un nuevo encabezado de factura con lista desplegable para ApplicationUser
-        public IActionResult Create()
+        public IActionResult Create(string idReserva)
         {
+            ViewData["IDReserva"] = idReserva;
+
             ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id");
             return View();
         }
 
         // POST: EncabezadoFacturas/Create
-        // Procesa la creación de un nuevo encabezado de factura, con validación del modelo y redirección a la lista de encabezados de facturas
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IDFactura,IDCorrelativoSAR,IDEmpleado,IDUsuario,NumeroFacturaSAR,FechaFactura,SubTotalFactura,DescuentoFactura,ImpuestoFactura,TotalFactura,Eliminada")] EncabezadoFactura encabezadoFactura)
+        public async Task<IActionResult> Create([Bind("IDFactura,IDCorrelativoSAR,IDReserva,IDUsuario,NumeroFacturaSAR,FechaFactura,SubTotalFactura,DescuentoFactura,ImpuestoFactura,TotalFactura,Eliminada")] EncabezadoFactura encabezadoFactura)
         {
-            // Asignar un nuevo GUID como ID del encabezado de factura
+            var reserva = _context.Reserva.Include(r => r.Habitacion).FirstOrDefault(r => r.IDReserva == encabezadoFactura.IDReserva);
+            var correlativo = ObtenerCorrelativo(encabezadoFactura.IDCorrelativoSAR);
+
+            // Guardar la factura
             encabezadoFactura.IDFactura = Guid.NewGuid();
-            // Agregar el encabezado de factura al contexto y guardar los cambios
+            encabezadoFactura.FechaFactura = DateTime.Now;
+
+            // Obtener el usuario autenticado
+            var usuarioAutenticado = await _userManager.GetUserAsync(User);
+
+            // Si el usuario autenticado no tiene el rol de cliente, asignar IDEmpleado como el ID del usuario autenticado
+            if (!await _userManager.IsInRoleAsync(usuarioAutenticado, "Cliente"))
+            {
+                encabezadoFactura.IDEmpleado = usuarioAutenticado.Id;
+            }
+
             _context.Add(encabezadoFactura);
+
+            reserva.Habitacion.Disponibilidad = false;
+
             await _context.SaveChangesAsync();
-            // Redirección a la lista de encabezados de facturas
+
+            // Llamar a la acción para actualizar UltimoUtilizado
+            await UpdateUltimoUtilizado(encabezadoFactura.IDCorrelativoSAR, encabezadoFactura.NumeroFacturaSAR);
+
             return RedirectToAction(nameof(Index));
 
-            // Recargar lista desplegable en caso de error
-            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", encabezadoFactura.IDUsuario);
-            return View(encabezadoFactura);
         }
 
         // GET: EncabezadoFacturas/Edit/5
-        // Muestra el formulario para editar un encabezado de factura existente con lista desplegable para ApplicationUser
         public async Task<IActionResult> Edit(Guid? id)
         {
-            // Validación de parámetros
             if (id == null || _context.EncabezadoFactura == null)
             {
                 return NotFound();
             }
 
-            // Obtener el encabezado de factura a editar
             var encabezadoFactura = await _context.EncabezadoFactura.FindAsync(id);
-
-            // Validación de existencia del encabezado de factura
             if (encabezadoFactura == null)
             {
                 return NotFound();
             }
-
-            // Cargar lista desplegable para ApplicationUser
-            ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", encabezadoFactura.IDUsuario);
+            ViewData["IDReserva"] = encabezadoFactura.IDReserva;
             return View(encabezadoFactura);
         }
 
         // POST: EncabezadoFacturas/Edit/5
-        // Procesa la edición de un encabezado de factura existente, con validación del modelo y redirección a la lista de encabezados de facturas
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("IDFactura,IDCorrelativoSAR,IDEmpleado,IDUsuario,NumeroFacturaSAR,FechaFactura,SubTotalFactura,DescuentoFactura,ImpuestoFactura,TotalFactura,Eliminada")] EncabezadoFactura encabezadoFactura)
+        public async Task<IActionResult> Edit(Guid id, [Bind("IDFactura,IDCorrelativoSAR,IDReserva,IDEmpleado,IDUsuario,NumeroFacturaSAR,FechaFactura,SubTotalFactura,DescuentoFactura,ImpuestoFactura,TotalFactura,Eliminada")] EncabezadoFactura encabezadoFactura)
         {
-            // Validación de igualdad de IDs
             if (id != encabezadoFactura.IDFactura)
             {
                 return NotFound();
             }
 
-            try
+            if (ModelState.IsValid)
             {
-                // Actualizar el encabezado de factura en el contexto y guardar los cambios
-                _context.Update(encabezadoFactura);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                // Manejo de excepciones de concurrencia
-                if (!EncabezadoFacturaExists(encabezadoFactura.IDFactura))
+                try
                 {
-                    return NotFound();
+                    _context.Update(encabezadoFactura);
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!EncabezadoFacturaExists(encabezadoFactura.IDFactura))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
+                return RedirectToAction(nameof(Index));
             }
-            // Redirección a la lista de encabezados de facturas
-            return RedirectToAction(nameof(Index));
-
-
-            // Recargar lista desplegable en caso de error
             ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", encabezadoFactura.IDUsuario);
+            ViewData["IDReserva"] = new SelectList(_context.Reserva, "IDReserva", "IDUsuario", encabezadoFactura.IDReserva);
             return View(encabezadoFactura);
         }
 
         // GET: EncabezadoFacturas/Delete/5
-        // Muestra la página de confirmación de eliminación de un encabezado de factura
         public async Task<IActionResult> Delete(Guid? id)
         {
-            // Validación de parámetros
             if (id == null || _context.EncabezadoFactura == null)
             {
                 return NotFound();
             }
 
-            // Obtener el encabezado de factura a eliminar con detalles de ApplicationUser
             var encabezadoFactura = await _context.EncabezadoFactura
                 .Include(e => e.ApplicationUser)
+                .Include(e => e.Reserva)
                 .FirstOrDefaultAsync(m => m.IDFactura == id);
-
-            // Validación de existencia del encabezado de factura
             if (encabezadoFactura == null)
             {
                 return NotFound();
             }
 
-            // Mostrar la página de confirmación de eliminación
             return View(encabezadoFactura);
         }
 
         // POST: EncabezadoFacturas/Delete/5
-        // Procesa la eliminación de un encabezado de factura y redirecciona a la lista de encabezados de facturas
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            // Validación de existencia del conjunto de entidades
-            if (_context.EncabezadoFactura == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.EncabezadoFactura' is null.");
-            }
-
-            // Buscar el encabezado de factura por ID
+            
             var encabezadoFactura = await _context.EncabezadoFactura.FindAsync(id);
 
-            // Validar la existencia del encabezado de factura antes de intentar eliminarlo
-            if (encabezadoFactura != null)
-            {
-                // Eliminar el encabezado de factura del contexto
-                _context.EncabezadoFactura.Remove(encabezadoFactura);
-            }
+            encabezadoFactura.Eliminada = true;
 
-            // Guardar los cambios en la base de datos
+            _context.Add(encabezadoFactura);
             await _context.SaveChangesAsync();
-
-            // Redirección a la lista de encabezados de facturas
             return RedirectToAction(nameof(Index));
         }
 
-        // Verificación de existencia de un encabezado de factura
         private bool EncabezadoFacturaExists(Guid id)
         {
-            // Verificar la existencia de un encabezado de factura con el ID proporcionado
-            return (_context.EncabezadoFactura?.Any(e => e.IDFactura == id)).GetValueOrDefault();
+          return (_context.EncabezadoFactura?.Any(e => e.IDFactura == id)).GetValueOrDefault();
+        }
+
+        // GET: EncabezadoFacturas/GetCorrelativoNoFinalizado
+        [HttpGet]
+        public IActionResult GetCorrelativoNoFinalizado()
+        {
+            var correlativoNoFinalizado = _context.CorrelativoSAR
+                .FirstOrDefault(c => !c.Finalizado);
+
+            return Json(new { IDCorrelativoSAR = correlativoNoFinalizado?.IDCorrelativoSAR });
+        }
+
+        [HttpGet]
+        public IActionResult GetReservaDetails(Guid idReserva)
+        {
+            var reserva = _context.Reserva.FirstOrDefault(r => r.IDReserva == idReserva);
+
+            if (reserva == null)
+            {
+                // Manejar el caso donde no se encuentra la reserva
+                return Json(null);
+            }
+
+            // Retorna un JSON con todos los datos de la reserva
+            return Json(reserva);
+        }
+
+        [HttpGet]
+        public IActionResult ObtenerHabitacion(Guid idHabitacion)
+        {
+            var habitacion = _context.Habitacion.FirstOrDefault(h => h.IDHabitacion == idHabitacion);
+
+            if (habitacion == null)
+            {
+                return Json(null);
+            }
+
+            return Json(habitacion);
+        }
+
+        public IActionResult ObtenerUsuario(string idUsuario)
+        {
+            var usuario = _context.ApplicationUser.FirstOrDefault(u => u.Id.Equals(idUsuario));
+
+            if (usuario == null)
+            {
+                return Json(null);
+            }
+
+            return Json(usuario);
+        }
+
+        public IActionResult ObtenerCorrelativo(Guid idCorrelativo)
+        {
+            var correlativo = _context.CorrelativoSAR.FirstOrDefault(c => c.IDCorrelativoSAR == idCorrelativo);
+
+            if (correlativo == null)
+            {
+                return Json(null);
+            }
+
+            return Json(correlativo);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateUltimoUtilizado(Guid? correlativoId, int nuevoNumero)
+        {
+            var correlativo = await _context.CorrelativoSAR.FindAsync(correlativoId);
+
+            if (correlativo != null)
+            {
+                correlativo.ActualizarUltimoUtilizado(nuevoNumero);
+                await _context.SaveChangesAsync();
+            }
+
+            // Puedes redirigir a donde desees después de la actualización
+            return RedirectToAction(nameof(Index));
         }
     }
 }

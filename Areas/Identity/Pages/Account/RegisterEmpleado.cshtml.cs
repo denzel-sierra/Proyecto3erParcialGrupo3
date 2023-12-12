@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HotelManager.Areas.Identity.Pages.Account
 {
+    [Authorize(Roles = "Admin")]
     public class RegisterEmpleadoModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;

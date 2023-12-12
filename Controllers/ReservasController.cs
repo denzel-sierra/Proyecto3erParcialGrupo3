@@ -9,17 +9,25 @@ using HotelManager.Data;
 using HotelManager.Models;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelManager.Controllers
 {
+    [Authorize]
     public class ReservasController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+
 
         // Constructor del controlador que recibe una instancia de ApplicationDbContext
-        public ReservasController(ApplicationDbContext context)
+        public ReservasController(
+            UserManager<ApplicationUser> userManager,
+            ApplicationDbContext context)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Reservas/Index
@@ -29,16 +37,32 @@ namespace HotelManager.Controllers
             // Convertir el ID de usuario a Guid si no es nulo ni vacío
             Guid? usuarioId = string.IsNullOrEmpty(idUsuario) ? (Guid?)null : Guid.Parse(idUsuario);
 
-            var applicationDbContext = _context.Reserva.Include(r => r.ApplicationUser).Include(r => r.EncabezadoFactura).Include(r => r.Habitacion);
+            var applicationDbContext = _context.Reserva.Include(r => r.ApplicationUser).Include(r => r.Habitacion);
+
+            // Verificar si el usuario autenticado tiene el rol de "Cliente"
+            var esCliente = User.IsInRole("Cliente");
 
             // Filtrar por ID de usuario si se proporciona
             if (usuarioId.HasValue)
             {
-                applicationDbContext = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<Reserva, Habitacion>)applicationDbContext.Where(r => r.IDUsuario == idUsuario);
+                // Si el usuario es cliente, filtrar por ID de usuario actual
+                if (esCliente)
+                {
+                    // Obtener el ID de usuario autenticado
+                    var usuarioActualId = _userManager.GetUserId(User);
+
+                    applicationDbContext = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<Reserva, Habitacion>)applicationDbContext.Where(r => r.IDUsuario == usuarioActualId);
+                }
+                else
+                {
+                    // Si no es cliente, filtrar por el ID proporcionado
+                    applicationDbContext = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<Reserva, Habitacion>)applicationDbContext.Where(r => r.IDUsuario == idUsuario);
+                }
             }
 
             return View(await applicationDbContext.ToListAsync());
         }
+
 
         // GET: Reservas/Details/5
         // Muestra los detalles de una reserva específica con detalles de ApplicationUser, EncabezadoFactura y Habitacion
@@ -53,7 +77,6 @@ namespace HotelManager.Controllers
             // Obtener la reserva con detalles de ApplicationUser, EncabezadoFactura y Habitacion
             var reserva = await _context.Reserva
                 .Include(r => r.ApplicationUser)
-                .Include(r => r.EncabezadoFactura)
                 .Include(r => r.Habitacion)
                 .FirstOrDefaultAsync(m => m.IDReserva == id);
 
@@ -82,14 +105,18 @@ namespace HotelManager.Controllers
         // Procesa la creación de una nueva reserva, con validación del modelo y redirección a la lista de reservas
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IDReserva,IDUsuario,IDHabitacion,IDFactura,FechaCheckin,FechaCheckOut,EstadoReserva")] Reserva reserva)
+        public async Task<IActionResult> Create(
+            [Bind("IDReserva,IDUsuario,IDHabitacion,FechaCheckin,FechaCheckOut,EstadoReserva")]
+            Reserva reserva)
         {
             reserva.IDReserva = Guid.NewGuid();
             reserva.EstadoReserva = "Vigente";
             _context.Add(reserva);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Create", "EncabezadoFacturas");
+            return RedirectToAction(nameof(Details), new { id = reserva.IDReserva });
         }
+
+
 
         // GET: Reservas/Edit/5
         // Muestra el formulario para editar una reserva existente con listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
@@ -112,7 +139,6 @@ namespace HotelManager.Controllers
 
             // Cargar listas desplegables para ApplicationUser, EncabezadoFactura y Habitacion
             ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", reserva.IDUsuario);
-            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario", reserva.IDFactura);
             ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion", reserva.IDHabitacion);
             return View(reserva);
         }
@@ -152,7 +178,6 @@ namespace HotelManager.Controllers
 
             // Recargar listas desplegables en caso de error
             ViewData["IDUsuario"] = new SelectList(_context.ApplicationUser, "Id", "Id", reserva.IDUsuario);
-            ViewData["IDFactura"] = new SelectList(_context.EncabezadoFactura, "IDFactura", "IDUsuario", reserva.IDFactura);
             ViewData["IDHabitacion"] = new SelectList(_context.Habitacion, "IDHabitacion", "IDHabitacion", reserva.IDHabitacion);
             return View(reserva);
         }
@@ -170,7 +195,6 @@ namespace HotelManager.Controllers
             // Obtener la reserva a eliminar con detalles de ApplicationUser, EncabezadoFactura y Habitacion
             var reserva = await _context.Reserva
                 .Include(r => r.ApplicationUser)
-                .Include(r => r.EncabezadoFactura)
                 .Include(r => r.Habitacion)
                 .FirstOrDefaultAsync(m => m.IDReserva == id);
 
@@ -244,10 +268,29 @@ namespace HotelManager.Controllers
                     (string.IsNullOrEmpty(tipoHabitacion) || h.TipoHabitacion.Descripcion.Contains(tipoHabitacion)) &&
                     (!tarifa.HasValue || h.Tarifa == tarifa.Value) &&
                     (disponibilidad.Equals(false) || h.Disponibilidad.Equals(true)))
-                .Select(h => new { h.IDHabitacion, h.Numero, h.Disponibilidad, h.IDTipoHabitacion, TipoHabitacion = h.TipoHabitacion.Descripcion, h.Tarifa })
+                .Select(h => new
+                {
+                    h.IDHabitacion,
+                    h.Numero,
+                    h.Disponibilidad,
+                    h.IDTipoHabitacion,
+                    TipoHabitacion = h.TipoHabitacion.Descripcion,
+                    h.Tarifa,
+                })
                 .ToList();
 
             return Json(habitaciones);
+        }
+
+        private Reserva ObtenerUltimaReserva(Guid idHabitacion)
+        {
+            // Obtener la última reserva para la habitación
+            var ultimaReserva = _context.Reserva
+                .Where(r => r.IDHabitacion == idHabitacion)
+                .OrderByDescending(r => r.FechaCheckOut)
+                .FirstOrDefault();
+
+            return ultimaReserva;
         }
 
         [HttpGet]
@@ -267,25 +310,68 @@ namespace HotelManager.Controllers
         [HttpGet]
         public async Task<IActionResult> ObtenerReservasPorMes(int mes, int año)
         {
+            // Verificar si el usuario autenticado tiene el rol de "Cliente"
+            var esCliente = User.IsInRole("Cliente");
+
             var fechaInicio = new DateTime(año, mes, 1);
             var fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
 
-            var reservas = await _context.Reserva
-                .Include(r => r.ApplicationUser)
+            IQueryable<Reserva> reservasQuery = _context.Reserva.Include(r => r.ApplicationUser);
+
+            // Filtrar por ID de usuario si el usuario es cliente
+            if (esCliente)
+            {
+                // Obtener el ID de usuario autenticado
+                var usuarioActualId = _userManager.GetUserId(User);
+                reservasQuery = reservasQuery.Where(r => r.IDUsuario == usuarioActualId);
+            }
+
+            // Filtrar por fechas
+            var reservas = await reservasQuery
                 .Where(r => r.FechaCheckin >= fechaInicio && r.FechaCheckin <= fechaFin)
                 .Select(r => new
                 {
-                    NombreUsuario = r.ApplicationUser.Nombre,
+                    IDReserva = r.IDReserva,
                     Habitacion = r.Habitacion.Numero,
                     TipoHabitacion = r.Habitacion.TipoHabitacion.Descripcion,
                     FechaCheckin = r.FechaCheckin,
                     FechaCheckOut = r.FechaCheckOut,
                     EstadoReserva = r.EstadoReserva,
-                    IDFactura = r.IDFactura
                 })
                 .ToListAsync();
 
             return Json(reservas);
+        }
+
+        private async Task<bool> VerificarDisponibilidadHabitacion(Guid idHabitacion, DateTime fechaCheckin, DateTime fechaCheckOut)
+        {
+            // Verificar si la habitación está incluida en alguna reserva para las fechas proporcionadas
+            var reservas = await _context.Reserva
+                .Where(r =>
+                    r.IDHabitacion == idHabitacion &&
+                    ((fechaCheckin >= r.FechaCheckin && fechaCheckin <= r.FechaCheckOut) ||
+                     (fechaCheckOut >= r.FechaCheckin && fechaCheckOut <= r.FechaCheckOut) ||
+                     (fechaCheckin <= r.FechaCheckin && fechaCheckOut >= r.FechaCheckOut)))
+                .ToListAsync();
+
+            if (reservas.Any())
+            {
+                return false; // La habitación no está disponible
+            }
+
+            // Verificar el estado de las reservas vigentes para la habitación
+            var reservasVigentes = await _context.Reserva
+                .Where(r => r.IDHabitacion == idHabitacion && r.EstadoReserva == "Vigente")
+                .ToListAsync();
+
+            // Si hay reservas vigentes, asegurarse de que la fecha de check-out sea igual o anterior a la fecha actual
+            if (reservasVigentes.Any(r => r.FechaCheckOut >= DateTime.Now))
+            {
+                return false; // La habitación no está disponible
+            }
+
+            // La habitación está disponible
+            return true;
         }
 
     }

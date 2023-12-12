@@ -116,14 +116,16 @@ namespace HotelManager.Migrations
                     b.Property<DateTime>("FechaHoraCita")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("IDEmpleado")
+                    b.Property<Guid?>("IDEmpleado")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("IDUsuario")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("IDCita");
+
+                    b.HasIndex("IDUsuario");
 
                     b.ToTable("Cita");
                 });
@@ -134,7 +136,7 @@ namespace HotelManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("FechaFinal")
+                    b.Property<DateTime?>("FechaFinal")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("FechaInicial")
@@ -148,7 +150,8 @@ namespace HotelManager.Migrations
 
                     b.Property<string>("NumeroCAI")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("NumeroFinal")
                         .HasColumnType("int");
@@ -156,82 +159,12 @@ namespace HotelManager.Migrations
                     b.Property<int>("NumeroInicial")
                         .HasColumnType("int");
 
-                    b.Property<int>("UltimoUtilizado")
+                    b.Property<int?>("UltimoUtilizado")
                         .HasColumnType("int");
 
                     b.HasKey("IDCorrelativoSAR");
 
                     b.ToTable("CorrelativoSAR");
-                });
-
-            modelBuilder.Entity("HotelManager.Models.DetalleProductoFactura", b =>
-                {
-                    b.Property<Guid>("IDDetalleFactura")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Cantidad")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("IDFactura")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("IDProducto")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("PrecioUnitario")
-                        .HasColumnType("decimal(8,2)")
-                        .HasColumnName("PrecioUnitario");
-
-                    b.Property<Guid>("ProductoIDProducto")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("SubTotalLinea")
-                        .HasColumnType("decimal(8,2)")
-                        .HasColumnName("SubTotalLinea");
-
-                    b.HasKey("IDDetalleFactura");
-
-                    b.HasIndex("IDFactura");
-
-                    b.HasIndex("ProductoIDProducto");
-
-                    b.ToTable("DetalleProductoFactura");
-                });
-
-            modelBuilder.Entity("HotelManager.Models.DetalleServicioFactura", b =>
-                {
-                    b.Property<Guid>("IDDetalleFactura")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Cantidad")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("IDFactura")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("IDServicio")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("PrecioUnitario")
-                        .HasColumnType("decimal(8,2)")
-                        .HasColumnName("PrecioUnitario");
-
-                    b.Property<Guid>("ServicioHotelIDServicio")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("SubTotalLinea")
-                        .HasColumnType("decimal(8,2)")
-                        .HasColumnName("SubTotalLinea");
-
-                    b.HasKey("IDDetalleFactura");
-
-                    b.HasIndex("IDFactura");
-
-                    b.HasIndex("ServicioHotelIDServicio");
-
-                    b.ToTable("DetalleServicioFactura");
                 });
 
             modelBuilder.Entity("HotelManager.Models.EncabezadoFactura", b =>
@@ -240,10 +173,7 @@ namespace HotelManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CorrelativoSARIDCorrelativoSAR")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("DescuentoFactura")
+                    b.Property<decimal?>("DescuentoFactura")
                         .HasColumnType("decimal(8,2)")
                         .HasColumnName("DescuentoFactura");
 
@@ -256,7 +186,10 @@ namespace HotelManager.Migrations
                     b.Property<Guid>("IDCorrelativoSAR")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IDEmpleado")
+                    b.Property<string>("IDEmpleado")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("IDReserva")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("IDUsuario")
@@ -281,7 +214,10 @@ namespace HotelManager.Migrations
 
                     b.HasKey("IDFactura");
 
-                    b.HasIndex("CorrelativoSARIDCorrelativoSAR");
+                    b.HasIndex("IDCorrelativoSAR");
+
+                    b.HasIndex("IDReserva")
+                        .IsUnique();
 
                     b.HasIndex("IDUsuario");
 
@@ -314,32 +250,6 @@ namespace HotelManager.Migrations
                     b.ToTable("Habitacion");
                 });
 
-            modelBuilder.Entity("HotelManager.Models.Producto", b =>
-                {
-                    b.Property<Guid>("IDProducto")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("Existencias")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NombreProducto")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<decimal>("PrecioUnitario")
-                        .HasColumnType("decimal(8,2)")
-                        .HasColumnName("PrecioUnitario");
-
-                    b.HasKey("IDProducto");
-
-                    b.ToTable("Producto");
-                });
-
             modelBuilder.Entity("HotelManager.Models.Reserva", b =>
                 {
                     b.Property<Guid>("IDReserva")
@@ -356,9 +266,6 @@ namespace HotelManager.Migrations
                     b.Property<DateTime>("FechaCheckin")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("IDFactura")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("IDHabitacion")
                         .HasColumnType("uniqueidentifier");
 
@@ -368,39 +275,11 @@ namespace HotelManager.Migrations
 
                     b.HasKey("IDReserva");
 
-                    b.HasIndex("IDFactura");
-
                     b.HasIndex("IDHabitacion");
 
                     b.HasIndex("IDUsuario");
 
                     b.ToTable("Reserva");
-                });
-
-            modelBuilder.Entity("HotelManager.Models.ServicioHotel", b =>
-                {
-                    b.Property<Guid>("IDServicio")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<TimeSpan>("Duracion")
-                        .HasColumnType("time");
-
-                    b.Property<string>("NombreServicio")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<decimal>("Tarifa")
-                        .HasColumnType("decimal(8,2)")
-                        .HasColumnName("Tarifa");
-
-                    b.HasKey("IDServicio");
-
-                    b.ToTable("ServicioHotel");
                 });
 
             modelBuilder.Entity("HotelManager.Models.TipoHabitacion", b =>
@@ -559,50 +438,29 @@ namespace HotelManager.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("HotelManager.Models.DetalleProductoFactura", b =>
+            modelBuilder.Entity("HotelManager.Models.Cita", b =>
                 {
-                    b.HasOne("HotelManager.Models.EncabezadoFactura", "EncabezadoFactura")
-                        .WithMany("DetalleProductoFacturas")
-                        .HasForeignKey("IDFactura")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("HotelManager.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("IDUsuario")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("HotelManager.Models.Producto", "Producto")
-                        .WithMany("DetalleProductoFacturas")
-                        .HasForeignKey("ProductoIDProducto")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EncabezadoFactura");
-
-                    b.Navigation("Producto");
-                });
-
-            modelBuilder.Entity("HotelManager.Models.DetalleServicioFactura", b =>
-                {
-                    b.HasOne("HotelManager.Models.EncabezadoFactura", "EncabezadoFactura")
-                        .WithMany("DetalleServicioFacturas")
-                        .HasForeignKey("IDFactura")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HotelManager.Models.ServicioHotel", "ServicioHotel")
-                        .WithMany("DetalleServicioFacturas")
-                        .HasForeignKey("ServicioHotelIDServicio")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EncabezadoFactura");
-
-                    b.Navigation("ServicioHotel");
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("HotelManager.Models.EncabezadoFactura", b =>
                 {
                     b.HasOne("HotelManager.Models.CorrelativoSAR", "CorrelativoSAR")
                         .WithMany("EncabezadoFacturas")
-                        .HasForeignKey("CorrelativoSARIDCorrelativoSAR")
+                        .HasForeignKey("IDCorrelativoSAR")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HotelManager.Models.Reserva", "Reserva")
+                        .WithOne()
+                        .HasForeignKey("HotelManager.Models.EncabezadoFactura", "IDReserva")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("HotelManager.ApplicationUser", "ApplicationUser")
@@ -614,6 +472,8 @@ namespace HotelManager.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("CorrelativoSAR");
+
+                    b.Navigation("Reserva");
                 });
 
             modelBuilder.Entity("HotelManager.Models.Habitacion", b =>
@@ -629,10 +489,6 @@ namespace HotelManager.Migrations
 
             modelBuilder.Entity("HotelManager.Models.Reserva", b =>
                 {
-                    b.HasOne("HotelManager.Models.EncabezadoFactura", "EncabezadoFactura")
-                        .WithMany("Reservas")
-                        .HasForeignKey("IDFactura");
-
                     b.HasOne("HotelManager.Models.Habitacion", "Habitacion")
                         .WithMany("Reservas")
                         .HasForeignKey("IDHabitacion")
@@ -646,8 +502,6 @@ namespace HotelManager.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
-
-                    b.Navigation("EncabezadoFactura");
 
                     b.Navigation("Habitacion");
                 });
@@ -708,28 +562,9 @@ namespace HotelManager.Migrations
                     b.Navigation("EncabezadoFacturas");
                 });
 
-            modelBuilder.Entity("HotelManager.Models.EncabezadoFactura", b =>
-                {
-                    b.Navigation("DetalleProductoFacturas");
-
-                    b.Navigation("DetalleServicioFacturas");
-
-                    b.Navigation("Reservas");
-                });
-
             modelBuilder.Entity("HotelManager.Models.Habitacion", b =>
                 {
                     b.Navigation("Reservas");
-                });
-
-            modelBuilder.Entity("HotelManager.Models.Producto", b =>
-                {
-                    b.Navigation("DetalleProductoFacturas");
-                });
-
-            modelBuilder.Entity("HotelManager.Models.ServicioHotel", b =>
-                {
-                    b.Navigation("DetalleServicioFacturas");
                 });
 
             modelBuilder.Entity("HotelManager.Models.TipoHabitacion", b =>
